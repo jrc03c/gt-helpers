@@ -29,7 +29,7 @@ let gt = {
 
 	array: {
 		shuffle: function(array, seed){
-			mathjs.config(seed);
+			mathjs.config({randomSeed: seed});
 			let out = array.slice();
 
 			for (let i=0; i<out.length; i++){
