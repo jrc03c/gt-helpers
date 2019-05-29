@@ -42,6 +42,18 @@ let gt = {
 
 			return out;
 		},
+
+		toSet: function(array){
+			let out = [];
+
+			array.forEach(function(item){
+				if (out.indexOf(item) < 0){
+					out.push(item);
+				}
+			});
+
+			return out;
+		},
 	},
 
 	object: {
