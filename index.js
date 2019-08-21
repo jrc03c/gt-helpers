@@ -3,13 +3,18 @@ let mathjs = require("mathjs")
 let gt = {
 	string: {
 		stripPunctuation: function(string){
-			let valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 "
+			let valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 \t\n\r"
 			let out = ""
 
 			for (let i=0; i<string.length; i++){
 				let char = string[i]
 				if (valid.includes(char)) out += char
 			}
+
+			while (out.includes("\t")) out = out.replace("\t", " ")
+			while (out.includes("\n")) out = out.replace("\n", " ")
+			while (out.includes("\r")) out = out.replace("\r", " ")
+			while (out.includes("  ")) out = out.replace("  ", " ")
 
 			return out
 		},
