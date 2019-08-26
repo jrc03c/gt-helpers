@@ -14,6 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "liquidjs": "^9.0.0",
     "mathjs": "^5.10.3"
   }
 }

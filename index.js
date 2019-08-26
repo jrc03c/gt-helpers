@@ -1,4 +1,6 @@
 let mathjs = require("mathjs")
+let LiquidJS = require("liquidjs")
+let liquid = new LiquidJS()
 
 let gt = {
 	string: {
@@ -102,6 +104,10 @@ let gt = {
 			})
 
 			return out
+		},
+
+		liquidBuild: async function(templateString, variableDict){
+			return await liquid.parseAndRender(templateString, variableDict)
 		},
 	},
 }
