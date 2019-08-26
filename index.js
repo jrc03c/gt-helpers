@@ -1,6 +1,6 @@
 let mathjs = require("mathjs")
-let LiquidJS = require("liquidjs")
-let liquid = new LiquidJS()
+let Liquid = require("liquidjs").Liquid
+let liquid = new Liquid()
 
 let gt = {
 	string: {
