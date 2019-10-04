@@ -80,19 +80,24 @@ So, for example:
 let gt = require("gt-helpers")
 
 let stripped = gt.string.stripPunctuation("Hello, world! My name is Josh.")
-console.log(stripped) // Hello world My name is Josh
+console.log(stripped)
+// Hello world My name is Josh
 
 let camelCased = gt.string.toCamelCase("Hello, world! My name is Josh.")
-console.log(camelCased) // helloWorldMyNameIsJosh
+console.log(camelCased)
+// helloWorldMyNameIsJosh
 
 let seed = 5
 let shuffled = gt.array.shuffle([1, 2, 3], seed)
-console.log(shuffled) // [3, 1, 2]
+console.log(shuffled)
+// [3, 1, 2]
 
 let set = gt.array.toSet([1, 2, 2, 3, 2, 2, 1, 2, 2, 2, 1, 1, 1, 2, 2, 3])
-console.log(set) // [1, 2, 3]
+console.log(set)
+// [1, 2, 3]
 
 let object = {name: "Josh", position: {x: 5, y: 7}}
 let association = gt.object.toAssociation(object)
-console.log(association) // {"name" -> "Josh", "position" -> {"x" -> 5, "y" -> 7}}
+console.log(association)
+// {"name" -> "Josh", "position" -> {"x" -> 5, "y" -> 7}}
 ```
