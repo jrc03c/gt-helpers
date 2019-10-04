@@ -1,5 +1,9 @@
 **gt-helpers** is a set of tools for creating GuidedTrack programs. Its main use is compiling GT programs in Liquid template form into finished GT programs, though it has a few other little tools as well.
 
+**Installation**
+
+`npm install --save https://github.com/jrc03c/gt-helpers`
+
 **Examples**
 
 To compile a simple Liquid template, start with a GT program that mixes in Liquid templating syntax:
