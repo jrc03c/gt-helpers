@@ -36,6 +36,7 @@ let gt = {
 
 	array: {
 		shuffle: function(array, seed){
+			seed = seed || 0
 			mathjs.config({randomSeed: seed})
 			let out = array.slice()
 
@@ -75,10 +76,10 @@ let gt = {
 
 				Object.keys(obj).forEach(function(key){
 					let val = recursiveParse(obj[key])
-					pairs.push(`"` + key + `"->` + val)
+					pairs.push(`"` + key + `" -> ` + val)
 				})
 
-				return "{" + pairs.join(",") + "}"
+				return "{" + pairs.join(", ") + "}"
 			}
 
 			return recursiveParse(obj)
