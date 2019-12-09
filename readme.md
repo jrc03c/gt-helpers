@@ -2,7 +2,14 @@
 
 **Installation**
 
+To use in Node:
+
 `npm install --save https://github.com/jrc03c/gt-helpers`
+
+To use in the browser:
+
+1. Clone this repo
+2. Attach the dist/gt-helpers.js script to a web page, which will make the `gt` object accessible as a global variable
 
 **Examples**
 
