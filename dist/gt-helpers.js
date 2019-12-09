@@ -114,7 +114,7 @@ let gt = {
 	},
 }
 
-module.exports = gt
+if (module) module.exports = gt
 if (window) window.gt = gt
 
 },{"liquidjs":7,"mathjs":8}],2:[function(require,module,exports){
