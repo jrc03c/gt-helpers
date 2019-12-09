@@ -114,3 +114,4 @@ let gt = {
 }
 
 module.exports = gt
+if (window) window.gt = gt
