@@ -21,7 +21,7 @@ This is a GT program!
 
 {% for question in questions %}
 *question: {{ question.text }}
-	*answers: {{ question.options }}
+  *answers: {{ question.options }}
 {% endfor %}
 ```
 
@@ -34,24 +34,24 @@ let fs = require("fs")
 
 let template = fs.readFileSync("template.gt", "utf8")
 let data = {
-	questions: [
-		{
-			text: "Why?", 
-			options: JSON.stringify(["Because.", "Why not?", "I said so."])
-		},
-		{
-			text: "How much?", 
-			options: JSON.stringify(["A lot.", "A little.", "None."])
-		},
-		{
-			text: "When?", 
-			options: JSON.stringify(["Now.", "Never."])
-		},
-	]
+  questions: [
+    {
+      text: "Why?", 
+      options: JSON.stringify(["Because.", "Why not?", "I said so."])
+    },
+    {
+      text: "How much?", 
+      options: JSON.stringify(["A lot.", "A little.", "None."])
+    },
+    {
+      text: "When?", 
+      options: JSON.stringify(["Now.", "Never."])
+    },
+  ]
 }
 
 gt.template.liquidBuild(template, data).then(function(final){
-	fs.writeFileSync("final.gt", final, "utf8")
+  fs.writeFileSync("final.gt", final, "utf8")
 })
 ```
 
@@ -67,13 +67,13 @@ This is a GT program!
 
 
 *question: Why?
-	*answers: ["Because.","Why not?","I said so."]
+  *answers: ["Because.","Why not?","I said so."]
 
 *question: How much?
-	*answers: ["A lot.","A little.","None."]
+  *answers: ["A lot.","A little.","None."]
 
 *question: When?
-	*answers: ["Now.","Never."]
+  *answers: ["Now.","Never."]
 ```
 
 I've also added a few little utility functions that make it easy to:
