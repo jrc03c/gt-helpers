@@ -76,7 +76,9 @@ This is a GT program!
   *answers: ["Now.","Never."]
 ```
 
-**NOTE:** Since GT syntax relies on using tabs for indentation, make sure that _both_ your GT template _and_ your JS file uses tabs to avoid ending up with a compiled GT program that uses spaced indentation!
+<div class="alert alert-warning">
+<b>NOTE:</b> Since GT syntax relies on using tabs for indentation, make sure that <i>both</i> your GT template <i>and</i> your JS file uses tabs to avoid ending up with a compiled GT program that uses spaced indentation!
+</div>
 
 I've also added a few little utility functions that make it easy to:
 
