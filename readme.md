@@ -76,6 +76,8 @@ This is a GT program!
   *answers: ["Now.","Never."]
 ```
 
+**NOTE:** Since GT syntax relies on using tabs for indentation, make sure that _both_ your GT template _and_ your JS file uses tabs to avoid ending up with a compiled GT program that uses spaced indentation!
+
 I've also added a few little utility functions that make it easy to:
 
 - strip punctuation from a string
