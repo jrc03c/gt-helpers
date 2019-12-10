@@ -3,6 +3,20 @@ let Liquid = require("liquidjs").Liquid
 let liquid = new Liquid()
 
 let gt = {
+	date: {
+		toGTDateObject: function(date){
+			let out = {
+				"year": date.getFullYear(),
+				"month": date.getMonth()+1,
+				"day": date.getDate(),
+				"hour": date.getHours(),
+				"minute": date.getMinutes(),
+			}
+
+			return out
+		},
+	},
+
 	string: {
 		stripPunctuation: function(string){
 			let valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 \t\n\r"
@@ -113,5 +127,5 @@ let gt = {
 	},
 }
 
-if (module) module.exports = gt
-if (window) window.gt = gt
+try {module.exports = gt} catch(e){}
+try {window.gt = gt} catch(e){}

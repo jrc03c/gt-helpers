@@ -111,4 +111,9 @@ let object = {name: "Josh", position: {x: 5, y: 7}}
 let association = gt.object.toAssociation(object)
 console.log(association)
 // {"name" -> "Josh", "position" -> {"x" -> 5, "y" -> 7}}
+
+let date = new Date("December 10, 2019 10:30:00")
+let gtDate = gt.date.toGTDateObject(date)
+console.log(gtDate)
+// { year: 2019, month: 12, day: 10, hour: 10, minute: 30 }
 ```
