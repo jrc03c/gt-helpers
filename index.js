@@ -1,4 +1,4 @@
-let mathjs = require("mathjs")
+let tools = require("js-math-tools")
 let Liquid = require("liquidjs").Liquid
 let liquid = new Liquid()
 
@@ -50,31 +50,12 @@ let gt = {
 
 	array: {
 		shuffle: function(array, seed){
-			seed = seed || 0
-			mathjs.config({randomSeed: seed})
-			let out = array.slice()
-
-			for (let i=0; i<out.length; i++){
-				let j = Math.floor(mathjs.random() * out.length)
-				let k = Math.floor(mathjs.random() * out.length)
-				let buffer = out[j]
-				out[j] = out[k]
-				out[k] = buffer
-			}
-
-			return out
+			tools.math.seed(seed)
+			return tools.math.shuffle(array)
 		},
 
 		toSet: function(array){
-			let out = []
-
-			array.forEach(function(item){
-				if (out.indexOf(item) < 0){
-					out.push(item)
-				}
-			})
-
-			return out
+			return tools.math.set(array)
 		},
 	},
 

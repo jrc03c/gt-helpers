@@ -14,7 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "liquidjs": "^9.0.0",
-    "mathjs": "^5.10.3"
+    "js-math-tools": "git+https://gitlab.com/jrc03c/js-math-tools.git",
+    "liquidjs": "^9.0.0"
   }
 }
