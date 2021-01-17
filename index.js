@@ -36,7 +36,7 @@ let gt = {
 		},
 
 		toCamelCase: function(string){
-			let array = gt.string.stripPunctuation(string).split(" ")
+			let array = gt.string.stripPunctuation(string).split(" ").filter(s => s.length > 0)
 			let out = array[0].toLowerCase()
 
 			for (let i=1; i<array.length; i++){

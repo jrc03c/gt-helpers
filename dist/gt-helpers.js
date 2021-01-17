@@ -37,7 +37,7 @@ let gt = {
 		},
 
 		toCamelCase: function(string){
-			let array = gt.string.stripPunctuation(string).split(" ")
+			let array = gt.string.stripPunctuation(string).split(" ").filter(s => s.length > 0)
 			let out = array[0].toLowerCase()
 
 			for (let i=1; i<array.length; i++){
@@ -6984,7 +6984,7 @@ function downloadJSON(obj, filename){
 module.exports = downloadJSON
 
 },{}],74:[function(require,module,exports){
-(function (global){
+(function (global){(function (){
 function dump(obj, excluded=["dump"]){
   Object.keys(obj).forEach(function(key){
     if (excluded.indexOf(key) < 0){
@@ -6995,7 +6995,7 @@ function dump(obj, excluded=["dump"]){
 
 module.exports = dump
 
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],75:[function(require,module,exports){
 function pause(ms){
   return new Promise(function(resolve, reject){
