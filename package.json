@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "watchify -e index.js -o dist/gt-helpers.js"
+		"build": "browserify -e index.js -o dist/gt-helpers.js",
+    "watch": "watchify -e index.js -o dist/gt-helpers.js"
   },
   "repository": {
     "type": "git",
@@ -15,6 +16,6 @@
   "license": "ISC",
   "dependencies": {
     "liquidjs": "^9.0.0",
-    "make-key": "gitlab:jrc03c/make-key"
+    "make-key": "github:jrc03c/make-key"
   }
 }
