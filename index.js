@@ -19,7 +19,7 @@ let gt = {
         minute: date.getMinutes(),
       }
 
-      return out
+      return gt.object.toAssociation(out)
     },
   },
 
