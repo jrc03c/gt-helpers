@@ -1,5 +1,5 @@
-let { Liquid } = require("liquidjs")
-let liquid = new Liquid()
+const { Liquid } = require("liquidjs")
+const liquid = new Liquid()
 
 if (!String.prototype.replaceAll) {
   String.prototype.replaceAll = function (a, b) {
@@ -8,10 +8,10 @@ if (!String.prototype.replaceAll) {
   }
 }
 
-let gt = {
+const gt = {
   date: {
     toGTDateObject(date) {
-      let out = {
+      const out = {
         year: date.getFullYear(),
         month: date.getMonth() + 1,
         day: date.getDate(),
@@ -26,15 +26,15 @@ let gt = {
   object: {
     toAssociation(obj) {
       function recursiveParse(obj) {
-        let type = typeof obj
+        const type = typeof obj
 
         if (type === "string") return JSON.stringify(obj)
         if (type === "number") return obj
 
-        let pairs = []
+        const pairs = []
 
         Object.keys(obj).forEach(key => {
-          let val = recursiveParse(obj[key])
+          const val = recursiveParse(obj[key])
           pairs.push(`"` + key + `" -> ` + val)
         })
 
@@ -46,30 +46,33 @@ let gt = {
   },
 
   template: {
-    build: function (templateString, variableDict) {
+    // `build` is the old function;
+    // it's used to replace {$ variable $} with dict.variable;
+    // you should probably use the new `liquidBuild` function instead!
+    build(template, dict) {
       // variable syntax: {$ variable $}
-      let out = templateString
-      let rx = /\{\$ ?(.*?) ?\$\}/g
-      placeholders = templateString.match(rx)
+      const out = template
+      const rx = /\{\$ ?(.*?) ?\$\}/g
+      placeholders = template.match(rx)
 
       if (!placeholders) return out
 
       placeholders.forEach(placeholder => {
-        let abbrev = placeholder
+        const abbrev = placeholder
           .split(" ")
           .join("")
           .replace("{$", "")
           .replace("$}", "")
 
-        if (!variableDict[abbrev]) throw "No definition for " + abbrev + "."
-        out = out.replaceAll(placeholder, variableDict[abbrev])
+        if (!dict[abbrev]) throw "No definition for " + abbrev + "."
+        out = out.replaceAll(placeholder, dict[abbrev])
       })
 
       return out
     },
 
-    async liquidBuild(templateString, variableDict) {
-      return await liquid.parseAndRender(templateString, variableDict)
+    async liquidBuild(template, dict) {
+      return await liquid.parseAndRender(template, dict)
     },
   },
 }
