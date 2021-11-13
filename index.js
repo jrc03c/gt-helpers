@@ -1,6 +1,13 @@
 let tools = require("@jrc03c/js-math-tools")
-let Liquid = require("liquidjs").Liquid
+let { Liquid } = require("liquidjs")
 let liquid = new Liquid()
+
+if (!String.prototype.replaceAll) {
+  String.prototype.replaceAll = function (a, b) {
+    const self = this
+    return self.split(a).join(b)
+  }
+}
 
 let gt = {
   date: {
@@ -21,6 +28,7 @@ let gt = {
     stripPunctuation: function (string) {
       let valid =
         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 \t\n\r"
+
       let out = ""
 
       for (let i = 0; i < string.length; i++) {
@@ -28,10 +36,10 @@ let gt = {
         if (valid.includes(char)) out += char
       }
 
-      while (out.includes("\t")) out = out.replace("\t", " ")
-      while (out.includes("\n")) out = out.replace("\n", " ")
-      while (out.includes("\r")) out = out.replace("\r", " ")
-      while (out.includes("  ")) out = out.replace("  ", " ")
+      out = out.replaceAll("\t", " ")
+      out = out.replaceAll("\n", " ")
+      out = out.replaceAll("\r", " ")
+      out = out.replaceAll("  ", " ")
 
       return out
     },
@@ -41,6 +49,7 @@ let gt = {
         .stripPunctuation(string)
         .split(" ")
         .filter(s => s.length > 0)
+
       let out = array[0].toLowerCase()
 
       for (let i = 1; i < array.length; i++) {
@@ -73,7 +82,7 @@ let gt = {
 
         let pairs = []
 
-        Object.keys(obj).forEach(function (key) {
+        Object.keys(obj).forEach(key => {
           let val = recursiveParse(obj[key])
           pairs.push(`"` + key + `" -> ` + val)
         })
@@ -94,17 +103,15 @@ let gt = {
 
       if (!placeholders) return out
 
-      placeholders.forEach(function (placeholder) {
+      placeholders.forEach(placeholder => {
         let abbrev = placeholder
           .split(" ")
           .join("")
           .replace("{$", "")
           .replace("$}", "")
-        if (!variableDict[abbrev]) throw "No definition for " + abbrev + "."
 
-        while (out.includes(placeholder)) {
-          out = out.replace(placeholder, variableDict[abbrev])
-        }
+        if (!variableDict[abbrev]) throw "No definition for " + abbrev + "."
+        out = out.replaceAll(placeholder, variableDict[abbrev])
       })
 
       return out
