@@ -1,4 +1,3 @@
-let tools = require("@jrc03c/js-math-tools")
 let { Liquid } = require("liquidjs")
 let liquid = new Liquid()
 
@@ -11,7 +10,7 @@ if (!String.prototype.replaceAll) {
 
 let gt = {
   date: {
-    toGTDateObject: function (date) {
+    toGTDateObject(date) {
       let out = {
         year: date.getFullYear(),
         month: date.getMonth() + 1,
@@ -21,54 +20,6 @@ let gt = {
       }
 
       return out
-    },
-  },
-
-  string: {
-    stripPunctuation: function (string) {
-      let valid =
-        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 \t\n\r"
-
-      let out = ""
-
-      for (let i = 0; i < string.length; i++) {
-        let char = string[i]
-        if (valid.includes(char)) out += char
-      }
-
-      out = out.replaceAll("\t", " ")
-      out = out.replaceAll("\n", " ")
-      out = out.replaceAll("\r", " ")
-      out = out.replaceAll("  ", " ")
-
-      return out
-    },
-
-    toCamelCase: function (string) {
-      let array = gt.string
-        .stripPunctuation(string)
-        .split(" ")
-        .filter(s => s.length > 0)
-
-      let out = array[0].toLowerCase()
-
-      for (let i = 1; i < array.length; i++) {
-        let s = array[i]
-        out += s[0].toUpperCase() + s.slice(1, s.length).toLowerCase()
-      }
-
-      return out
-    },
-  },
-
-  array: {
-    shuffle: function (array, seed) {
-      tools.math.seed(seed)
-      return tools.math.shuffle(array)
-    },
-
-    toSet: function (array) {
-      return tools.math.set(array)
     },
   },
 

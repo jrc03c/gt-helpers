@@ -15,7 +15,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "liquidjs": "^9.0.0",
-    "make-key": "github:jrc03c/make-key"
+    "liquidjs": "^9.0.0"
   }
 }
