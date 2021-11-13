@@ -68,7 +68,7 @@ let gt = {
       return out
     },
 
-    liquidBuild: async function (templateString, variableDict) {
+    async liquidBuild(templateString, variableDict) {
       return await liquid.parseAndRender(templateString, variableDict)
     },
   },
