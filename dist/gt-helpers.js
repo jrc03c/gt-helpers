@@ -125,7 +125,7 @@ try {
   window.gt = gt
 } catch (e) {}
 
-},{"@jrc03c/js-math-tools":36,"liquidjs":89}],2:[function(require,module,exports){
+},{"@jrc03c/js-math-tools":38,"liquidjs":92}],2:[function(require,module,exports){
 const isNumber = require("./is-number.js")
 const vectorize = require("./vectorize.js")
 
@@ -140,7 +140,7 @@ function abs(x) {
 
 module.exports = vectorize(abs)
 
-},{"./is-number.js":44,"./vectorize.js":86}],3:[function(require,module,exports){
+},{"./is-number.js":46,"./vectorize.js":89}],3:[function(require,module,exports){
 const isNumber = require("./is-number.js")
 const vectorize = require("./vectorize.js")
 
@@ -162,7 +162,7 @@ function add() {
 
 module.exports = vectorize(add)
 
-},{"./is-number.js":44,"./vectorize.js":86}],4:[function(require,module,exports){
+},{"./is-number.js":46,"./vectorize.js":89}],4:[function(require,module,exports){
 const assert = require("./assert.js")
 const isUndefined = require("./is-undefined.js")
 const isArray = require("./is-array.js")
@@ -244,7 +244,7 @@ function append(a, b, axis = 0) {
 
 module.exports = append
 
-},{"./assert.js":11,"./is-array.js":40,"./is-number.js":44,"./is-undefined.js":46,"./shape.js":70,"./transpose.js":83}],5:[function(require,module,exports){
+},{"./assert.js":11,"./is-array.js":42,"./is-number.js":46,"./is-undefined.js":48,"./shape.js":73,"./transpose.js":86}],5:[function(require,module,exports){
 const vectorize = require("./vectorize.js")
 
 function apply(x, fn) {
@@ -257,7 +257,7 @@ function apply(x, fn) {
 
 module.exports = vectorize(apply)
 
-},{"./vectorize.js":86}],6:[function(require,module,exports){
+},{"./vectorize.js":89}],6:[function(require,module,exports){
 const isNumber = require("./is-number.js")
 const vectorize = require("./vectorize.js")
 
@@ -272,7 +272,7 @@ function arccos(x) {
 
 module.exports = vectorize(arccos)
 
-},{"./is-number.js":44,"./vectorize.js":86}],7:[function(require,module,exports){
+},{"./is-number.js":46,"./vectorize.js":89}],7:[function(require,module,exports){
 const isNumber = require("./is-number.js")
 const vectorize = require("./vectorize.js")
 
@@ -287,7 +287,7 @@ function arcsin(x) {
 
 module.exports = vectorize(arcsin)
 
-},{"./is-number.js":44,"./vectorize.js":86}],8:[function(require,module,exports){
+},{"./is-number.js":46,"./vectorize.js":89}],8:[function(require,module,exports){
 const isNumber = require("./is-number.js")
 const vectorize = require("./vectorize.js")
 
@@ -302,7 +302,7 @@ function arctan(x) {
 
 module.exports = vectorize(arctan)
 
-},{"./is-number.js":44,"./vectorize.js":86}],9:[function(require,module,exports){
+},{"./is-number.js":46,"./vectorize.js":89}],9:[function(require,module,exports){
 const indexOf = require("./index-of.js")
 const max = require("./max.js")
 
@@ -316,7 +316,7 @@ function argmax(x) {
 
 module.exports = argmax
 
-},{"./index-of.js":35,"./max.js":50}],10:[function(require,module,exports){
+},{"./index-of.js":37,"./max.js":52}],10:[function(require,module,exports){
 const indexOf = require("./index-of.js")
 const min = require("./min.js")
 
@@ -330,7 +330,7 @@ function argmin(x) {
 
 module.exports = argmin
 
-},{"./index-of.js":35,"./min.js":53}],11:[function(require,module,exports){
+},{"./index-of.js":37,"./min.js":55}],11:[function(require,module,exports){
 module.exports = function (isTrue, message) {
   if (!isTrue) throw new Error(message)
 }
@@ -350,7 +350,7 @@ function ceil(x) {
 
 module.exports = vectorize(ceil)
 
-},{"./is-number.js":44,"./vectorize.js":86}],13:[function(require,module,exports){
+},{"./is-number.js":46,"./vectorize.js":89}],13:[function(require,module,exports){
 const isUndefined = require("./is-undefined.js")
 const abs = require("./abs.js")
 const vectorize = require("./vectorize.js")
@@ -374,7 +374,7 @@ function chop(x, threshold) {
 
 module.exports = vectorize(chop)
 
-},{"./abs.js":2,"./is-number.js":44,"./is-undefined.js":46,"./vectorize.js":86}],14:[function(require,module,exports){
+},{"./abs.js":2,"./is-number.js":46,"./is-undefined.js":48,"./vectorize.js":89}],14:[function(require,module,exports){
 const isNumber = require("./is-number.js")
 const vectorize = require("./vectorize.js")
 
@@ -394,7 +394,7 @@ function clamp(x, a, b) {
 
 module.exports = vectorize(clamp)
 
-},{"./is-number.js":44,"./vectorize.js":86}],15:[function(require,module,exports){
+},{"./is-number.js":46,"./vectorize.js":89}],15:[function(require,module,exports){
 const mean = require("./mean.js")
 const variance = require("./variance.js")
 
@@ -411,7 +411,49 @@ function cohensd(arr1, arr2) {
 
 module.exports = cohensd
 
-},{"./mean.js":51,"./variance.js":85}],16:[function(require,module,exports){
+},{"./mean.js":53,"./variance.js":88}],16:[function(require,module,exports){
+const isArray = require("./is-array.js")
+const isNumber = require("./is-number.js")
+const assert = require("./assert.js")
+
+function combine(arr, r) {
+  assert(isArray(arr), "The `combine` function only works on arrays!")
+  assert(isNumber(r), "`r` must be a whole number!")
+
+  if (r > arr.length) {
+    return [arr]
+  }
+
+  if (r <= 0) {
+    return [[]]
+  }
+
+  assert(r === parseInt(r), "`r` must be a whole number!")
+
+  if (arr.length < 2) return arr
+  const out = []
+
+  arr.forEach((item, i) => {
+    assert(
+      !isArray(item),
+      "It is not recommended to get combinations of arrays of arrays. Weird things happen, and I haven't figured out how to account for such a scenario yet. A possible workaround is: convert each sub-array to a string (using `JSON.stringify`), get the combinations using the array of strings, and then convert each string in each combination back to a sub-array (using `JSON.parse`)."
+    )
+
+    const after = arr.slice(i + 1)
+    if (after.length < r - 1) return
+    const children = combine(after, r - 1)
+
+    children.forEach(child => {
+      out.push([item].concat(child))
+    })
+  })
+
+  return out
+}
+
+module.exports = combine
+
+},{"./assert.js":11,"./is-array.js":42,"./is-number.js":46}],17:[function(require,module,exports){
 const assert = require("./assert.js")
 const isUndefined = require("./is-undefined.js")
 const isArray = require("./is-array.js")
@@ -438,7 +480,7 @@ function copy(x) {
 
 module.exports = copy
 
-},{"./assert.js":11,"./is-array.js":40,"./is-undefined.js":46}],17:[function(require,module,exports){
+},{"./assert.js":11,"./is-array.js":42,"./is-undefined.js":48}],18:[function(require,module,exports){
 const covariance = require("./covariance.js")
 const std = require("./std.js")
 
@@ -452,7 +494,7 @@ function correl(x, y) {
 
 module.exports = correl
 
-},{"./covariance.js":20,"./std.js":77}],18:[function(require,module,exports){
+},{"./covariance.js":21,"./std.js":80}],19:[function(require,module,exports){
 const isNumber = require("./is-number.js")
 const vectorize = require("./vectorize.js")
 
@@ -467,7 +509,7 @@ function cos(x) {
 
 module.exports = vectorize(cos)
 
-},{"./is-number.js":44,"./vectorize.js":86}],19:[function(require,module,exports){
+},{"./is-number.js":46,"./vectorize.js":89}],20:[function(require,module,exports){
 const assert = require("./assert.js")
 const isUndefined = require("./is-undefined.js")
 const isArray = require("./is-array.js")
@@ -502,7 +544,7 @@ function count(arr, items) {
 
 module.exports = count
 
-},{"./assert.js":11,"./flatten.js":30,"./is-array.js":40,"./is-equal.js":42,"./is-undefined.js":46,"./set.js":69}],20:[function(require,module,exports){
+},{"./assert.js":11,"./flatten.js":32,"./is-array.js":42,"./is-equal.js":44,"./is-undefined.js":48,"./set.js":72}],21:[function(require,module,exports){
 const mean = require("./mean.js")
 const isUndefined = require("./is-undefined.js")
 
@@ -527,7 +569,7 @@ function covariance(x, y) {
 
 module.exports = covariance
 
-},{"./is-undefined.js":46,"./mean.js":51}],21:[function(require,module,exports){
+},{"./is-undefined.js":48,"./mean.js":53}],22:[function(require,module,exports){
 (function (process){(function (){
 const assert = require("./assert.js")
 const isArray = require("./is-array.js")
@@ -1849,7 +1891,7 @@ class DataFrame {
 module.exports = DataFrame
 
 }).call(this)}).call(this,require('_process'))
-},{"./apply.js":5,"./assert.js":11,"./copy.js":16,"./drop-nan.js":29,"./flatten.js":30,"./is-array.js":40,"./is-boolean.js":41,"./is-equal.js":42,"./is-function.js":43,"./is-number.js":44,"./is-string.js":45,"./is-undefined.js":46,"./max.js":50,"./min.js":53,"./ndarray.js":56,"./random.js":61,"./range.js":62,"./series.js":67,"./set.js":69,"./shape.js":70,"./sort.js":75,"./transpose.js":83,"_process":92,"fs":90,"path":91}],22:[function(require,module,exports){
+},{"./apply.js":5,"./assert.js":11,"./copy.js":17,"./drop-nan.js":30,"./flatten.js":32,"./is-array.js":42,"./is-boolean.js":43,"./is-equal.js":44,"./is-function.js":45,"./is-number.js":46,"./is-string.js":47,"./is-undefined.js":48,"./max.js":52,"./min.js":55,"./ndarray.js":58,"./random.js":64,"./range.js":65,"./series.js":70,"./set.js":72,"./shape.js":73,"./sort.js":78,"./transpose.js":86,"_process":95,"fs":93,"path":94}],23:[function(require,module,exports){
 const assert = require("./assert.js")
 const isArray = require("./is-array.js")
 const flatten = require("./flatten.js")
@@ -1871,7 +1913,7 @@ function diff(a, b) {
 
 module.exports = diff
 
-},{"./assert.js":11,"./flatten.js":30,"./is-array.js":40}],23:[function(require,module,exports){
+},{"./assert.js":11,"./flatten.js":32,"./is-array.js":42}],24:[function(require,module,exports){
 const pow = require("./pow.js")
 const sum = require("./sum.js")
 const sqrt = require("./sqrt.js")
@@ -1887,7 +1929,7 @@ function distance(a, b) {
 
 module.exports = distance
 
-},{"./pow.js":59,"./sqrt.js":76,"./subtract.js":79,"./sum.js":80}],24:[function(require,module,exports){
+},{"./pow.js":62,"./sqrt.js":79,"./subtract.js":82,"./sum.js":83}],25:[function(require,module,exports){
 const scale = require("./scale.js")
 const pow = require("./pow.js")
 
@@ -1897,7 +1939,7 @@ function divide(a, b) {
 
 module.exports = divide
 
-},{"./pow.js":59,"./scale.js":66}],25:[function(require,module,exports){
+},{"./pow.js":62,"./scale.js":69}],26:[function(require,module,exports){
 const assert = require("./assert.js")
 const isUndefined = require("./is-undefined.js")
 const isArray = require("./is-array.js")
@@ -1970,7 +2012,7 @@ function dot(a, b) {
 
 module.exports = dot
 
-},{"./assert.js":11,"./flatten.js":30,"./is-array.js":40,"./is-equal.js":42,"./is-number.js":44,"./is-undefined.js":46,"./scale.js":66,"./shape.js":70,"./sum.js":80,"./transpose.js":83}],26:[function(require,module,exports){
+},{"./assert.js":11,"./flatten.js":32,"./is-array.js":42,"./is-equal.js":44,"./is-number.js":46,"./is-undefined.js":48,"./scale.js":69,"./shape.js":73,"./sum.js":83,"./transpose.js":86}],27:[function(require,module,exports){
 const assert = require("./assert.js")
 const isUndefined = require("./is-undefined.js")
 const isArray = require("./is-array.js")
@@ -2003,7 +2045,7 @@ function dropMissingPairwise(a, b) {
 
 module.exports = dropMissingPairwise
 
-},{"./assert.js":11,"./is-array.js":40,"./is-undefined.js":46,"./max.js":50,"./shape.js":70}],27:[function(require,module,exports){
+},{"./assert.js":11,"./is-array.js":42,"./is-undefined.js":48,"./max.js":52,"./shape.js":73}],28:[function(require,module,exports){
 const assert = require("./assert.js")
 const isArray = require("./is-array.js")
 const isUndefined = require("./is-undefined.js")
@@ -2025,7 +2067,7 @@ function dropMissing(x) {
 
 module.exports = dropMissing
 
-},{"./assert.js":11,"./is-array.js":40,"./is-undefined.js":46,"./shape.js":70}],28:[function(require,module,exports){
+},{"./assert.js":11,"./is-array.js":42,"./is-undefined.js":48,"./shape.js":73}],29:[function(require,module,exports){
 const assert = require("./assert.js")
 const isUndefined = require("./is-undefined.js")
 const isArray = require("./is-array.js")
@@ -2064,7 +2106,7 @@ function dropNaNPairwise(a, b) {
 
 module.exports = dropNaNPairwise
 
-},{"./assert.js":11,"./is-array.js":40,"./is-number.js":44,"./is-undefined.js":46,"./max.js":50,"./shape.js":70}],29:[function(require,module,exports){
+},{"./assert.js":11,"./is-array.js":42,"./is-number.js":46,"./is-undefined.js":48,"./max.js":52,"./shape.js":73}],30:[function(require,module,exports){
 const assert = require("./assert.js")
 const isArray = require("./is-array.js")
 const isUndefined = require("./is-undefined.js")
@@ -2087,7 +2129,22 @@ function dropNaN(x) {
 
 module.exports = dropNaN
 
-},{"./assert.js":11,"./is-array.js":40,"./is-number.js":44,"./is-undefined.js":46,"./shape.js":70}],30:[function(require,module,exports){
+},{"./assert.js":11,"./is-array.js":42,"./is-number.js":46,"./is-undefined.js":48,"./shape.js":73}],31:[function(require,module,exports){
+const vectorize = require("./vectorize.js")
+
+function factorial(n) {
+  try {
+    if (n !== parseInt(n)) return NaN
+    if (n <= 1) return 1
+    return n * factorial(n - 1)
+  } catch (e) {
+    return NaN
+  }
+}
+
+module.exports = vectorize(factorial)
+
+},{"./vectorize.js":89}],32:[function(require,module,exports){
 const assert = require("./assert.js")
 const isUndefined = require("./is-undefined.js")
 const isArray = require("./is-array.js")
@@ -2115,7 +2172,7 @@ function flatten(arr) {
 
 module.exports = flatten
 
-},{"./assert.js":11,"./is-array.js":40,"./is-undefined.js":46}],31:[function(require,module,exports){
+},{"./assert.js":11,"./is-array.js":42,"./is-undefined.js":48}],33:[function(require,module,exports){
 const isNumber = require("./is-number.js")
 const vectorize = require("./vectorize.js")
 
@@ -2131,7 +2188,7 @@ function float(x) {
 
 module.exports = vectorize(float)
 
-},{"./is-number.js":44,"./vectorize.js":86}],32:[function(require,module,exports){
+},{"./is-number.js":46,"./vectorize.js":89}],34:[function(require,module,exports){
 const isNumber = require("./is-number.js")
 const vectorize = require("./vectorize.js")
 
@@ -2146,7 +2203,7 @@ function floor(x) {
 
 module.exports = vectorize(floor)
 
-},{"./is-number.js":44,"./vectorize.js":86}],33:[function(require,module,exports){
+},{"./is-number.js":46,"./vectorize.js":89}],35:[function(require,module,exports){
 const assert = require("./assert.js")
 const isUndefined = require("./is-undefined.js")
 const isArray = require("./is-array.js")
@@ -2204,7 +2261,7 @@ function getValueAt(x, index) {
 
 module.exports = getValueAt
 
-},{"./assert.js":11,"./int.js":37,"./is-array.js":40,"./is-number.js":44,"./is-undefined.js":46,"./shape.js":70}],34:[function(require,module,exports){
+},{"./assert.js":11,"./int.js":39,"./is-array.js":42,"./is-number.js":46,"./is-undefined.js":48,"./shape.js":73}],36:[function(require,module,exports){
 const assert = require("./assert.js")
 const isUndefined = require("./is-undefined.js")
 const isNumber = require("./is-number.js")
@@ -2238,7 +2295,7 @@ function identity(size) {
 
 module.exports = identity
 
-},{"./assert.js":11,"./is-number.js":44,"./is-undefined.js":46,"./zeros.js":88}],35:[function(require,module,exports){
+},{"./assert.js":11,"./is-number.js":46,"./is-undefined.js":48,"./zeros.js":91}],37:[function(require,module,exports){
 const assert = require("./assert.js")
 const isUndefined = require("./is-undefined.js")
 const isArray = require("./is-array.js")
@@ -2279,7 +2336,7 @@ function indexOf(x, v, requireIdentity) {
 
 module.exports = indexOf
 
-},{"./assert.js":11,"./is-array.js":40,"./is-equal.js":42,"./is-undefined.js":46,"./shape.js":70}],36:[function(require,module,exports){
+},{"./assert.js":11,"./is-array.js":42,"./is-equal.js":44,"./is-undefined.js":48,"./shape.js":73}],38:[function(require,module,exports){
 (function (global){(function (){
 let out = {
   abs: require("./abs.js"),
@@ -2296,6 +2353,7 @@ let out = {
   chop: require("./chop.js"),
   clamp: require("./clamp.js"),
   cohensd: require("./cohens-d.js"),
+  combine: require("./combine.js"),
   copy: require("./copy.js"),
   correl: require("./correl.js"),
   cos: require("./cos.js"),
@@ -2310,6 +2368,7 @@ let out = {
   dropMissingPairwise: require("./drop-missing-pairwise.js"),
   dropNaN: require("./drop-nan.js"),
   dropNaNPairwise: require("./drop-nan-pairwise.js"),
+  factorial: require("./factorial.js"),
   flatten: require("./flatten.js"),
   float: require("./float.js"),
   floor: require("./floor.js"),
@@ -2338,6 +2397,7 @@ let out = {
   ndarray: require("./ndarray.js"),
   normal: require("./normal.js"),
   ones: require("./ones.js"),
+  permute: require("./permute.js"),
   pow: require("./pow.js"),
   print: require("./print.js"),
   random: require("./random.js").random,
@@ -2388,7 +2448,7 @@ if (typeof window !== "undefined") {
 }
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./abs.js":2,"./add.js":3,"./append.js":4,"./apply.js":5,"./arccos.js":6,"./arcsin.js":7,"./arctan.js":8,"./argmax.js":9,"./argmin.js":10,"./assert.js":11,"./ceil.js":12,"./chop.js":13,"./clamp.js":14,"./cohens-d.js":15,"./copy.js":16,"./correl.js":17,"./cos.js":18,"./count.js":19,"./covariance.js":20,"./dataframe.js":21,"./diff.js":22,"./distance.js":23,"./divide.js":24,"./dot.js":25,"./drop-missing-pairwise.js":26,"./drop-missing.js":27,"./drop-nan-pairwise.js":28,"./drop-nan.js":29,"./flatten.js":30,"./float.js":31,"./floor.js":32,"./get-value-at.js":33,"./identity.js":34,"./index-of.js":35,"./int.js":37,"./intersect.js":38,"./inverse.js":39,"./is-array.js":40,"./is-boolean.js":41,"./is-equal.js":42,"./is-function.js":43,"./is-number.js":44,"./is-string.js":45,"./is-undefined.js":46,"./lerp.js":47,"./log.js":48,"./map.js":49,"./max.js":50,"./mean.js":51,"./median.js":52,"./min.js":53,"./mode.js":54,"./multiply.js":55,"./ndarray.js":56,"./normal.js":57,"./ones.js":58,"./pow.js":59,"./print.js":60,"./random.js":61,"./range.js":62,"./reshape.js":63,"./reverse.js":64,"./round.js":65,"./scale.js":66,"./series.js":67,"./set-value-at.js":68,"./set.js":69,"./shape.js":70,"./shuffle.js":71,"./sign.js":72,"./sin.js":73,"./slice.js":74,"./sort.js":75,"./sqrt.js":76,"./std.js":77,"./stdev.js":78,"./subtract.js":79,"./sum.js":80,"./tan.js":81,"./time.js":82,"./transpose.js":83,"./union.js":84,"./variance.js":85,"./vectorize.js":86,"./where.js":87,"./zeros.js":88}],37:[function(require,module,exports){
+},{"./abs.js":2,"./add.js":3,"./append.js":4,"./apply.js":5,"./arccos.js":6,"./arcsin.js":7,"./arctan.js":8,"./argmax.js":9,"./argmin.js":10,"./assert.js":11,"./ceil.js":12,"./chop.js":13,"./clamp.js":14,"./cohens-d.js":15,"./combine.js":16,"./copy.js":17,"./correl.js":18,"./cos.js":19,"./count.js":20,"./covariance.js":21,"./dataframe.js":22,"./diff.js":23,"./distance.js":24,"./divide.js":25,"./dot.js":26,"./drop-missing-pairwise.js":27,"./drop-missing.js":28,"./drop-nan-pairwise.js":29,"./drop-nan.js":30,"./factorial.js":31,"./flatten.js":32,"./float.js":33,"./floor.js":34,"./get-value-at.js":35,"./identity.js":36,"./index-of.js":37,"./int.js":39,"./intersect.js":40,"./inverse.js":41,"./is-array.js":42,"./is-boolean.js":43,"./is-equal.js":44,"./is-function.js":45,"./is-number.js":46,"./is-string.js":47,"./is-undefined.js":48,"./lerp.js":49,"./log.js":50,"./map.js":51,"./max.js":52,"./mean.js":53,"./median.js":54,"./min.js":55,"./mode.js":56,"./multiply.js":57,"./ndarray.js":58,"./normal.js":59,"./ones.js":60,"./permute.js":61,"./pow.js":62,"./print.js":63,"./random.js":64,"./range.js":65,"./reshape.js":66,"./reverse.js":67,"./round.js":68,"./scale.js":69,"./series.js":70,"./set-value-at.js":71,"./set.js":72,"./shape.js":73,"./shuffle.js":74,"./sign.js":75,"./sin.js":76,"./slice.js":77,"./sort.js":78,"./sqrt.js":79,"./std.js":80,"./stdev.js":81,"./subtract.js":82,"./sum.js":83,"./tan.js":84,"./time.js":85,"./transpose.js":86,"./union.js":87,"./variance.js":88,"./vectorize.js":89,"./where.js":90,"./zeros.js":91}],39:[function(require,module,exports){
 const isNumber = require("./is-number.js")
 const vectorize = require("./vectorize.js")
 
@@ -2404,7 +2464,7 @@ function int(x) {
 
 module.exports = vectorize(int)
 
-},{"./is-number.js":44,"./vectorize.js":86}],38:[function(require,module,exports){
+},{"./is-number.js":46,"./vectorize.js":89}],40:[function(require,module,exports){
 const isArray = require("./is-array.js")
 const flatten = require("./flatten.js")
 const union = require("./union.js")
@@ -2433,7 +2493,7 @@ function intersect() {
 
 module.exports = intersect
 
-},{"./flatten.js":30,"./is-array.js":40,"./union.js":84}],39:[function(require,module,exports){
+},{"./flatten.js":32,"./is-array.js":42,"./union.js":87}],41:[function(require,module,exports){
 const assert = require("./assert.js")
 const isUndefined = require("./is-undefined.js")
 const isArray = require("./is-array.js")
@@ -2544,21 +2604,21 @@ function inverse(x) {
 
 module.exports = inverse
 
-},{"./add.js":3,"./append.js":4,"./assert.js":11,"./dot.js":25,"./flatten.js":30,"./is-array.js":40,"./is-number.js":44,"./is-undefined.js":46,"./range.js":62,"./scale.js":66,"./shape.js":70,"./slice.js":74}],40:[function(require,module,exports){
+},{"./add.js":3,"./append.js":4,"./assert.js":11,"./dot.js":26,"./flatten.js":32,"./is-array.js":42,"./is-number.js":46,"./is-undefined.js":48,"./range.js":65,"./scale.js":69,"./shape.js":73,"./slice.js":77}],42:[function(require,module,exports){
 function isArray(obj) {
   return obj instanceof Array
 }
 
 module.exports = isArray
 
-},{}],41:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 function isBoolean(x) {
   return typeof x === "boolean"
 }
 
 module.exports = isBoolean
 
-},{}],42:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 const isArray = require("./is-array.js")
 
 function isEqual(a, b) {
@@ -2593,35 +2653,35 @@ function isEqual(a, b) {
 
 module.exports = isEqual
 
-},{"./is-array.js":40}],43:[function(require,module,exports){
+},{"./is-array.js":42}],45:[function(require,module,exports){
 function isFunction(fn) {
   return typeof fn === "function"
 }
 
 module.exports = isFunction
 
-},{}],44:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 function isNumber(x) {
   return typeof x === "number" && !isNaN(x)
 }
 
 module.exports = isNumber
 
-},{}],45:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 function isString(s) {
   return typeof s === "string"
 }
 
 module.exports = isString
 
-},{}],46:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 function isUndefined(x) {
   return x === null || typeof x === "undefined"
 }
 
 module.exports = isUndefined
 
-},{}],47:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 const vectorize = require("./vectorize.js")
 const isNumber = require("./is-number.js")
 
@@ -2639,7 +2699,7 @@ function lerp(a, b, f) {
 
 module.exports = vectorize(lerp)
 
-},{"./is-number.js":44,"./vectorize.js":86}],48:[function(require,module,exports){
+},{"./is-number.js":46,"./vectorize.js":89}],50:[function(require,module,exports){
 const isNumber = require("./is-number.js")
 const isUndefined = require("./is-undefined.js")
 const vectorize = require("./vectorize.js")
@@ -2657,7 +2717,7 @@ function log(x, base) {
 
 module.exports = vectorize(log)
 
-},{"./is-number.js":44,"./is-undefined.js":46,"./vectorize.js":86}],49:[function(require,module,exports){
+},{"./is-number.js":46,"./is-undefined.js":48,"./vectorize.js":89}],51:[function(require,module,exports){
 const isNumber = require("./is-number.js")
 const vectorize = require("./vectorize.js")
 
@@ -2677,7 +2737,7 @@ function map(x, a, b, c, d) {
 
 module.exports = vectorize(map)
 
-},{"./is-number.js":44,"./vectorize.js":86}],50:[function(require,module,exports){
+},{"./is-number.js":46,"./vectorize.js":89}],52:[function(require,module,exports){
 const flatten = require("./flatten.js")
 const isNumber = require("./is-number.js")
 
@@ -2699,7 +2759,7 @@ function max(arr) {
 
 module.exports = max
 
-},{"./flatten.js":30,"./is-number.js":44}],51:[function(require,module,exports){
+},{"./flatten.js":32,"./is-number.js":46}],53:[function(require,module,exports){
 const isNumber = require("./is-number.js")
 const flatten = require("./flatten.js")
 
@@ -2721,7 +2781,7 @@ function mean(arr) {
 
 module.exports = mean
 
-},{"./flatten.js":30,"./is-number.js":44}],52:[function(require,module,exports){
+},{"./flatten.js":32,"./is-number.js":46}],54:[function(require,module,exports){
 const assert = require("./assert.js")
 const isUndefined = require("./is-undefined.js")
 const isArray = require("./is-array.js")
@@ -2754,7 +2814,7 @@ function median(arr) {
 
 module.exports = median
 
-},{"./assert.js":11,"./drop-nan.js":29,"./flatten.js":30,"./is-array.js":40,"./is-number.js":44,"./is-undefined.js":46,"./sort.js":75}],53:[function(require,module,exports){
+},{"./assert.js":11,"./drop-nan.js":30,"./flatten.js":32,"./is-array.js":42,"./is-number.js":46,"./is-undefined.js":48,"./sort.js":78}],55:[function(require,module,exports){
 const flatten = require("./flatten.js")
 const isNumber = require("./is-number.js")
 
@@ -2776,7 +2836,7 @@ function min(arr) {
 
 module.exports = min
 
-},{"./flatten.js":30,"./is-number.js":44}],54:[function(require,module,exports){
+},{"./flatten.js":32,"./is-number.js":46}],56:[function(require,module,exports){
 const flatten = require("./flatten.js")
 const count = require("./count.js")
 const set = require("./set.js")
@@ -2812,7 +2872,7 @@ function mode(arr) {
 
 module.exports = mode
 
-},{"./count.js":19,"./flatten.js":30,"./set.js":69,"./sort.js":75}],55:[function(require,module,exports){
+},{"./count.js":20,"./flatten.js":32,"./set.js":72,"./sort.js":78}],57:[function(require,module,exports){
 const isNumber = require("./is-number.js")
 const vectorize = require("./vectorize.js")
 
@@ -2834,7 +2894,7 @@ function multiply() {
 
 module.exports = vectorize(multiply)
 
-},{"./is-number.js":44,"./vectorize.js":86}],56:[function(require,module,exports){
+},{"./is-number.js":46,"./vectorize.js":89}],58:[function(require,module,exports){
 const assert = require("./assert.js")
 const isUndefined = require("./is-undefined.js")
 const isArray = require("./is-array.js")
@@ -2876,7 +2936,7 @@ function ndarray(shape, shouldSkipChecks) {
 
 module.exports = ndarray
 
-},{"./assert.js":11,"./flatten.js":30,"./is-array.js":40,"./is-number.js":44,"./is-undefined.js":46}],57:[function(require,module,exports){
+},{"./assert.js":11,"./flatten.js":32,"./is-array.js":42,"./is-number.js":46,"./is-undefined.js":48}],59:[function(require,module,exports){
 const isUndefined = require("./is-undefined.js")
 const ndarray = require("./ndarray.js")
 const apply = require("./apply.js")
@@ -2903,7 +2963,7 @@ function normal(shape) {
 
 module.exports = normal
 
-},{"./apply.js":5,"./is-number.js":44,"./is-undefined.js":46,"./ndarray.js":56,"./random.js":61,"./reshape.js":63}],58:[function(require,module,exports){
+},{"./apply.js":5,"./is-number.js":46,"./is-undefined.js":48,"./ndarray.js":58,"./random.js":64,"./reshape.js":66}],60:[function(require,module,exports){
 const ndarray = require("./ndarray.js")
 const apply = require("./apply.js")
 const reshape = require("./reshape.js")
@@ -2920,7 +2980,52 @@ function ones(shape) {
 
 module.exports = ones
 
-},{"./apply.js":5,"./is-number.js":44,"./ndarray.js":56,"./reshape.js":63}],59:[function(require,module,exports){
+},{"./apply.js":5,"./is-number.js":46,"./ndarray.js":58,"./reshape.js":66}],61:[function(require,module,exports){
+const isArray = require("./is-array.js")
+const isNumber = require("./is-number.js")
+const assert = require("./assert.js")
+const isUndefined = require("./is-undefined.js")
+
+function permute(arr, r) {
+  assert(isArray(arr), "The `permute` function only works on arrays!")
+  if (isUndefined(r)) r = arr.length
+  assert(isNumber(r), "`r` must be a whole number!")
+
+  if (r > arr.length) {
+    return permute(arr)
+  }
+
+  if (r <= 0) {
+    return [[]]
+  }
+
+  assert(r === parseInt(r), "`r` must be a whole number!")
+
+  if (arr.length < 2) return arr
+  const out = []
+
+  arr.forEach((item, i) => {
+    assert(
+      !isArray(item),
+      "It is not recommended to permute arrays of arrays. Weird things happen, and I haven't figured out how to account for such a scenario yet. A possible workaround is: convert each sub-array to a string (using `JSON.stringify`), get the permutations using the array of strings, and then convert each string in each combination back to a sub-array (using `JSON.parse`)."
+    )
+
+    const before = arr.slice(0, i)
+    const after = arr.slice(i + 1)
+    const others = before.concat(after)
+    const children = permute(others, r - 1)
+
+    children.forEach(child => {
+      out.push([item].concat(child))
+    })
+  })
+
+  return out
+}
+
+module.exports = permute
+
+},{"./assert.js":11,"./is-array.js":42,"./is-number.js":46,"./is-undefined.js":48}],62:[function(require,module,exports){
 const isNumber = require("./is-number.js")
 const vectorize = require("./vectorize.js")
 
@@ -2936,7 +3041,7 @@ function pow(x, p) {
 
 module.exports = vectorize(pow)
 
-},{"./is-number.js":44,"./vectorize.js":86}],60:[function(require,module,exports){
+},{"./is-number.js":46,"./vectorize.js":89}],63:[function(require,module,exports){
 let isArray = require("./is-array.js")
 let shape = require("./shape.js")
 let DataFrame = require("./dataframe.js")
@@ -2966,7 +3071,7 @@ function print(){
 
 module.exports = print
 
-},{"./dataframe.js":21,"./is-array.js":40,"./series.js":67,"./shape.js":70}],61:[function(require,module,exports){
+},{"./dataframe.js":22,"./is-array.js":42,"./series.js":70,"./shape.js":73}],64:[function(require,module,exports){
 const ndarray = require("./ndarray.js")
 const apply = require("./apply.js")
 const isUndefined = require("./is-undefined.js")
@@ -3052,7 +3157,7 @@ function random(shape) {
 
 module.exports = { random, seed }
 
-},{"./apply.js":5,"./assert.js":11,"./copy.js":16,"./is-number.js":44,"./is-undefined.js":46,"./ndarray.js":56,"./reshape.js":63}],62:[function(require,module,exports){
+},{"./apply.js":5,"./assert.js":11,"./copy.js":17,"./is-number.js":46,"./is-undefined.js":48,"./ndarray.js":58,"./reshape.js":66}],65:[function(require,module,exports){
 const assert = require("./assert.js")
 const isUndefined = require("./is-undefined.js")
 const isNumber = require("./is-number.js")
@@ -3091,7 +3196,7 @@ function range(a, b, step = 1) {
 
 module.exports = range
 
-},{"./assert.js":11,"./is-number.js":44,"./is-undefined.js":46,"./reverse.js":64}],63:[function(require,module,exports){
+},{"./assert.js":11,"./is-number.js":46,"./is-undefined.js":48,"./reverse.js":67}],66:[function(require,module,exports){
 const assert = require("./assert.js")
 const isArray = require("./is-array.js")
 const isNumber = require("./is-number.js")
@@ -3146,7 +3251,7 @@ function reshape(x, newShape) {
 
 module.exports = reshape
 
-},{"./assert.js":11,"./flatten.js":30,"./is-array.js":40,"./is-number.js":44,"./shape.js":70}],64:[function(require,module,exports){
+},{"./assert.js":11,"./flatten.js":32,"./is-array.js":42,"./is-number.js":46,"./shape.js":73}],67:[function(require,module,exports){
 const assert = require("./assert.js")
 const isUndefined = require("./is-undefined.js")
 const isArray = require("./is-array.js")
@@ -3166,7 +3271,7 @@ function reverse(arr) {
 
 module.exports = reverse
 
-},{"./assert.js":11,"./is-array.js":40,"./is-undefined.js":46}],65:[function(require,module,exports){
+},{"./assert.js":11,"./is-array.js":42,"./is-undefined.js":48}],68:[function(require,module,exports){
 const isNumber = require("./is-number.js")
 const vectorize = require("./vectorize.js")
 
@@ -3181,7 +3286,7 @@ function round(x) {
 
 module.exports = vectorize(round)
 
-},{"./is-number.js":44,"./vectorize.js":86}],66:[function(require,module,exports){
+},{"./is-number.js":46,"./vectorize.js":89}],69:[function(require,module,exports){
 const multiply = require("./multiply.js")
 
 function scale(a, b) {
@@ -3190,7 +3295,7 @@ function scale(a, b) {
 
 module.exports = scale
 
-},{"./multiply.js":55}],67:[function(require,module,exports){
+},{"./multiply.js":57}],70:[function(require,module,exports){
 const assert = require("./assert.js")
 const isArray = require("./is-array.js")
 const isUndefined = require("./is-undefined.js")
@@ -3678,7 +3783,7 @@ class Series {
 
 module.exports = Series
 
-},{"./apply.js":5,"./assert.js":11,"./copy.js":16,"./is-array.js":40,"./is-boolean.js":41,"./is-function.js":43,"./is-number.js":44,"./is-string.js":45,"./is-undefined.js":46,"./ndarray.js":56,"./range.js":62,"./reverse.js":64,"./set.js":69,"./shape.js":70,"./sort.js":75,"./transpose.js":83}],68:[function(require,module,exports){
+},{"./apply.js":5,"./assert.js":11,"./copy.js":17,"./is-array.js":42,"./is-boolean.js":43,"./is-function.js":45,"./is-number.js":46,"./is-string.js":47,"./is-undefined.js":48,"./ndarray.js":58,"./range.js":65,"./reverse.js":67,"./set.js":72,"./shape.js":73,"./sort.js":78,"./transpose.js":86}],71:[function(require,module,exports){
 const assert = require("./assert.js")
 const isNumber = require("./is-number.js")
 const isArray = require("./is-array.js")
@@ -3710,7 +3815,7 @@ function setValueAt(x, index, value) {
 
 module.exports = setValueAt
 
-},{"./assert.js":11,"./copy.js":16,"./is-array.js":40,"./is-number.js":44}],69:[function(require,module,exports){
+},{"./assert.js":11,"./copy.js":17,"./is-array.js":42,"./is-number.js":46}],72:[function(require,module,exports){
 const assert = require("./assert.js")
 const isUndefined = require("./is-undefined.js")
 const isArray = require("./is-array.js")
@@ -3740,7 +3845,7 @@ function set(arr) {
 
 module.exports = set
 
-},{"./assert.js":11,"./flatten.js":30,"./is-array.js":40,"./is-undefined.js":46}],70:[function(require,module,exports){
+},{"./assert.js":11,"./flatten.js":32,"./is-array.js":42,"./is-undefined.js":48}],73:[function(require,module,exports){
 const assert = require("./assert.js")
 const isUndefined = require("./is-undefined.js")
 const isArray = require("./is-array.js")
@@ -3777,7 +3882,7 @@ function shape(arr) {
 
 module.exports = shape
 
-},{"./assert.js":11,"./is-array.js":40,"./is-undefined.js":46,"./max.js":50}],71:[function(require,module,exports){
+},{"./assert.js":11,"./is-array.js":42,"./is-undefined.js":48,"./max.js":52}],74:[function(require,module,exports){
 const assert = require("./assert.js")
 const isUndefined = require("./is-undefined.js")
 const isArray = require("./is-array.js")
@@ -3805,7 +3910,7 @@ function shuffle(arr) {
 
 module.exports = shuffle
 
-},{"./assert.js":11,"./floor.js":32,"./is-array.js":40,"./is-undefined.js":46,"./random.js":61}],72:[function(require,module,exports){
+},{"./assert.js":11,"./floor.js":34,"./is-array.js":42,"./is-undefined.js":48,"./random.js":64}],75:[function(require,module,exports){
 const isNumber = require("./is-number.js")
 const vectorize = require("./vectorize.js")
 
@@ -3822,7 +3927,7 @@ function sign(x) {
 
 module.exports = vectorize(sign)
 
-},{"./is-number.js":44,"./vectorize.js":86}],73:[function(require,module,exports){
+},{"./is-number.js":46,"./vectorize.js":89}],76:[function(require,module,exports){
 const isNumber = require("./is-number.js")
 const vectorize = require("./vectorize.js")
 
@@ -3837,7 +3942,7 @@ function sin(x) {
 
 module.exports = vectorize(sin)
 
-},{"./is-number.js":44,"./vectorize.js":86}],74:[function(require,module,exports){
+},{"./is-number.js":46,"./vectorize.js":89}],77:[function(require,module,exports){
 const assert = require("./assert.js")
 const isUndefined = require("./is-undefined.js")
 const isNumber = require("./is-number.js")
@@ -3891,7 +3996,7 @@ function slice(arr, indices) {
 
 module.exports = slice
 
-},{"./assert.js":11,"./flatten.js":30,"./floor.js":32,"./is-array.js":40,"./is-number.js":44,"./is-undefined.js":46,"./range.js":62,"./shape.js":70}],75:[function(require,module,exports){
+},{"./assert.js":11,"./flatten.js":32,"./floor.js":34,"./is-array.js":42,"./is-number.js":46,"./is-undefined.js":48,"./range.js":65,"./shape.js":73}],78:[function(require,module,exports){
 const assert = require("./assert.js")
 const isUndefined = require("./is-undefined.js")
 const isArray = require("./is-array.js")
@@ -3921,7 +4026,7 @@ function sort(arr, fn) {
 
 module.exports = sort
 
-},{"./assert.js":11,"./is-array.js":40,"./is-function.js":43,"./is-undefined.js":46}],76:[function(require,module,exports){
+},{"./assert.js":11,"./is-array.js":42,"./is-function.js":45,"./is-undefined.js":48}],79:[function(require,module,exports){
 const isNumber = require("./is-number.js")
 const vectorize = require("./vectorize.js")
 
@@ -3936,7 +4041,7 @@ function sqrt(x) {
 
 module.exports = vectorize(sqrt)
 
-},{"./is-number.js":44,"./vectorize.js":86}],77:[function(require,module,exports){
+},{"./is-number.js":46,"./vectorize.js":89}],80:[function(require,module,exports){
 const sqrt = require("./sqrt.js")
 const variance = require("./variance.js")
 
@@ -3950,7 +4055,7 @@ function std(arr) {
 
 module.exports = std
 
-},{"./sqrt.js":76,"./variance.js":85}],78:[function(require,module,exports){
+},{"./sqrt.js":79,"./variance.js":88}],81:[function(require,module,exports){
 const std = require("./std.js")
 
 function stdev(x) {
@@ -3959,7 +4064,7 @@ function stdev(x) {
 
 module.exports = stdev
 
-},{"./std.js":77}],79:[function(require,module,exports){
+},{"./std.js":80}],82:[function(require,module,exports){
 const add = require("./add.js")
 const scale = require("./scale.js")
 
@@ -3969,7 +4074,7 @@ function subtract(a, b) {
 
 module.exports = subtract
 
-},{"./add.js":3,"./scale.js":66}],80:[function(require,module,exports){
+},{"./add.js":3,"./scale.js":69}],83:[function(require,module,exports){
 const add = require("./add.js")
 const flatten = require("./flatten.js")
 
@@ -3983,7 +4088,7 @@ function sum(arr) {
 
 module.exports = sum
 
-},{"./add.js":3,"./flatten.js":30}],81:[function(require,module,exports){
+},{"./add.js":3,"./flatten.js":32}],84:[function(require,module,exports){
 const isNumber = require("./is-number.js")
 const vectorize = require("./vectorize.js")
 
@@ -3998,7 +4103,7 @@ function tan(x) {
 
 module.exports = vectorize(tan)
 
-},{"./is-number.js":44,"./vectorize.js":86}],82:[function(require,module,exports){
+},{"./is-number.js":46,"./vectorize.js":89}],85:[function(require,module,exports){
 const isFunction = require("./is-function.js")
 
 function timeSync(fn, args) {
@@ -4031,7 +4136,7 @@ async function timeAsync(fn, args) {
 
 module.exports = { timeSync, timeAsync }
 
-},{"./is-function.js":43}],83:[function(require,module,exports){
+},{"./is-function.js":45}],86:[function(require,module,exports){
 const assert = require("./assert.js")
 const isUndefined = require("./is-undefined.js")
 const isArray = require("./is-array.js")
@@ -4071,7 +4176,7 @@ function transpose(arr) {
 
 module.exports = transpose
 
-},{"./assert.js":11,"./is-array.js":40,"./is-undefined.js":46,"./ndarray.js":56,"./reverse.js":64,"./shape.js":70}],84:[function(require,module,exports){
+},{"./assert.js":11,"./is-array.js":42,"./is-undefined.js":48,"./ndarray.js":58,"./reverse.js":67,"./shape.js":73}],87:[function(require,module,exports){
 const assert = require("./assert.js")
 const set = require("./set.js")
 
@@ -4081,7 +4186,7 @@ function union() {
 
 module.exports = union
 
-},{"./assert.js":11,"./set.js":69}],85:[function(require,module,exports){
+},{"./assert.js":11,"./set.js":72}],88:[function(require,module,exports){
 const mean = require("./mean.js")
 const flatten = require("./flatten.js")
 const isNumber = require("./is-number.js")
@@ -4105,7 +4210,7 @@ function variance(arr) {
 
 module.exports = variance
 
-},{"./flatten.js":30,"./is-number.js":44,"./mean.js":51}],86:[function(require,module,exports){
+},{"./flatten.js":32,"./is-number.js":46,"./mean.js":53}],89:[function(require,module,exports){
 const assert = require("./assert.js")
 const isUndefined = require("./is-undefined.js")
 const isArray = require("./is-array.js")
@@ -4161,7 +4266,7 @@ function vectorize(fn) {
 
 module.exports = vectorize
 
-},{"./assert.js":11,"./is-array.js":40,"./is-function.js":43,"./is-undefined.js":46,"./max.js":50}],87:[function(require,module,exports){
+},{"./assert.js":11,"./is-array.js":42,"./is-function.js":45,"./is-undefined.js":48,"./max.js":52}],90:[function(require,module,exports){
 const assert = require("./assert.js")
 const isArray = require("./is-array.js")
 const isFunction = require("./is-function.js")
@@ -4205,7 +4310,7 @@ function where(x, fn) {
 
 module.exports = where
 
-},{"./apply.js":5,"./assert.js":11,"./flatten.js":30,"./index-of.js":35,"./is-array.js":40,"./is-function.js":43,"./set-value-at.js":68}],88:[function(require,module,exports){
+},{"./apply.js":5,"./assert.js":11,"./flatten.js":32,"./index-of.js":37,"./is-array.js":42,"./is-function.js":45,"./set-value-at.js":71}],91:[function(require,module,exports){
 const ndarray = require("./ndarray.js")
 const apply = require("./apply.js")
 const isNumber = require("./is-number.js")
@@ -4222,9 +4327,9 @@ function zeros(shape) {
 
 module.exports = zeros
 
-},{"./apply.js":5,"./is-number.js":44,"./ndarray.js":56,"./reshape.js":63}],89:[function(require,module,exports){
+},{"./apply.js":5,"./is-number.js":46,"./ndarray.js":58,"./reshape.js":66}],92:[function(require,module,exports){
 /*
- * liquidjs@9.28.1, https://github.com/harttle/liquidjs
+ * liquidjs@9.28.4, https://github.com/harttle/liquidjs
  * (c) 2016-2021 harttle
  * Released under the MIT License.
  */
@@ -4754,15 +4859,14 @@ module.exports = zeros
         operatorsTrie: createTrie(defaultOperators)
     };
     function normalize(options) {
-        options = options || {};
+        if (options.hasOwnProperty('operators')) {
+            options.operatorsTrie = createTrie(options.operators);
+        }
         if (options.hasOwnProperty('root')) {
-            options.root = normalizeDirectoryList(options.root);
-        }
-        if (options.hasOwnProperty('partials')) {
-            options.partials = normalizeDirectoryList(options.partials);
-        }
-        if (options.hasOwnProperty('layouts')) {
-            options.layouts = normalizeDirectoryList(options.layouts);
+            if (!options.hasOwnProperty('partials'))
+                options.partials = options.root;
+            if (!options.hasOwnProperty('layouts'))
+                options.layouts = options.root;
         }
         if (options.hasOwnProperty('cache')) {
             var cache = void 0;
@@ -4774,20 +4878,15 @@ module.exports = zeros
                 cache = options.cache ? new LRU(1024) : undefined;
             options.cache = cache;
         }
-        if (options.hasOwnProperty('operators')) {
-            options.operatorsTrie = createTrie(options.operators);
+        options = __assign({}, defaultOptions, options);
+        if (!options.fs.dirname && options.relativeReference) {
+            console.warn('[LiquidJS] `fs.dirname` is required for relativeReference, set relativeReference to `false` to suppress this warning, or provide implementation for `fs.dirname`');
+            options.relativeReference = false;
         }
+        options.root = normalizeDirectoryList(options.root);
+        options.partials = normalizeDirectoryList(options.partials);
+        options.layouts = normalizeDirectoryList(options.layouts);
         return options;
-    }
-    function applyDefault(options) {
-        var fullOptions = __assign({}, defaultOptions, options);
-        if (fullOptions.partials === defaultOptions.partials) {
-            fullOptions.partials = fullOptions.root;
-        }
-        if (fullOptions.layouts === defaultOptions.layouts) {
-            fullOptions.layouts = fullOptions.root;
-        }
-        return fullOptions;
     }
     function normalizeDirectoryList(value) {
         var list = [];
@@ -4912,6 +5011,10 @@ module.exports = zeros
             if (env === void 0) { env = {}; }
             if (opts === void 0) { opts = defaultOptions; }
             if (sync === void 0) { sync = false; }
+            /**
+             * insert a Context-level empty scope,
+             * for tags like {% capture %} {% assign %} to operate
+             */
             this.scopes = [{}];
             this.registers = {};
             this.sync = sync;
@@ -5033,8 +5136,16 @@ module.exports = zeros
     var Loader = /** @class */ (function () {
         function Loader(options) {
             this.options = options;
-            this.sep = this.options.fs.sep || '/';
-            this.rRelativePath = new RegExp(['.' + this.sep, '..' + this.sep].map(function (prefix) { return escapeRegex(prefix); }).join('|'));
+            if (options.relativeReference) {
+                var sep = options.fs.sep;
+                assert(sep, '`fs.sep` is required for relative reference');
+                var rRelativePath_1 = new RegExp(['.' + sep, '..' + sep, './', '../'].map(function (prefix) { return escapeRegex(prefix); }).join('|'));
+                this.shouldLoadRelative = function (referencedFile) { return rRelativePath_1.test(referencedFile); };
+            }
+            else {
+                this.shouldLoadRelative = function (referencedFile) { return false; };
+            }
+            this.contains = this.options.fs.contains || (function () { return true; });
         }
         Loader.prototype.lookup = function (file, type, sync, currentFile) {
             var fs, dirs, _a, _b, filepath, _c, e_1_1;
@@ -5081,9 +5192,6 @@ module.exports = zeros
                 }
             });
         };
-        Loader.prototype.shouldLoadRelative = function (referencedFile) {
-            return this.options.relativeReference && this.rRelativePath.test(referencedFile);
-        };
         Loader.prototype.candidates = function (file, dirs, currentFile, enforceRoot) {
             var _a, fs, extname, referenced, dirs_1, dirs_1_1, dir, e_2_1, dirs_2, dirs_2_1, dir, referenced, e_3_1, filepath;
             var e_2, _b, e_3, _c;
@@ -5101,7 +5209,7 @@ module.exports = zeros
                     case 2:
                         if (!!dirs_1_1.done) return [3 /*break*/, 5];
                         dir = dirs_1_1.value;
-                        if (!(!enforceRoot || this.withinDir(referenced, dir))) return [3 /*break*/, 4];
+                        if (!(!enforceRoot || this.contains(dir, referenced))) return [3 /*break*/, 4];
                         // the relatively referenced file is within one of root dirs
                         return [4 /*yield*/, referenced];
                     case 3:
@@ -5130,7 +5238,7 @@ module.exports = zeros
                         if (!!dirs_2_1.done) return [3 /*break*/, 12];
                         dir = dirs_2_1.value;
                         referenced = fs.resolve(dir, file, extname);
-                        if (!(!enforceRoot || this.withinDir(referenced, dir))) return [3 /*break*/, 11];
+                        if (!(!enforceRoot || this.contains(dir, referenced))) return [3 /*break*/, 11];
                         return [4 /*yield*/, referenced];
                     case 10:
                         _d.sent();
@@ -5160,10 +5268,6 @@ module.exports = zeros
                     case 17: return [2 /*return*/];
                 }
             });
-        };
-        Loader.prototype.withinDir = function (file, dir) {
-            dir = dir.endsWith(this.sep) ? dir : dir + this.sep;
-            return file.startsWith(dir);
         };
         Loader.prototype.dirname = function (path) {
             var fs = this.options.fs;
@@ -7122,69 +7226,71 @@ module.exports = zeros
             this.hash = new Hash(tokenizer.remaining());
         },
         render: function (ctx, emitter) {
-            var _a, liquid, hash, filepath, childCtx, scope, _b, value, alias, _c, value, alias, collection, collection_1, collection_1_1, item, templates, e_1_1, templates;
-            var e_1, _d;
-            return __generator(this, function (_e) {
-                switch (_e.label) {
+            var _a, liquid, hash, filepath, childCtx, scope, _b, _c, _d, value, alias, _e, value, alias, collection, collection_1, collection_1_1, item, templates, e_1_1, templates;
+            var e_1, _f;
+            return __generator(this, function (_g) {
+                switch (_g.label) {
                     case 0:
                         _a = this, liquid = _a.liquid, hash = _a.hash;
                         return [4 /*yield*/, this.renderFilePath(this['file'], ctx, liquid)];
                     case 1:
-                        filepath = _e.sent();
+                        filepath = _g.sent();
                         assert(filepath, function () { return "illegal filename \"" + filepath + "\""; });
                         childCtx = new Context({}, ctx.opts, ctx.sync);
+                        scope = childCtx.bottom();
+                        _b = __assign;
+                        _c = [scope];
                         return [4 /*yield*/, hash.render(ctx)];
                     case 2:
-                        scope = _e.sent();
+                        _b.apply(void 0, _c.concat([_g.sent()]));
                         if (this['with']) {
-                            _b = this['with'], value = _b.value, alias = _b.alias;
+                            _d = this['with'], value = _d.value, alias = _d.alias;
                             scope[alias || filepath] = evalToken(value, ctx);
                         }
-                        childCtx.push(scope);
                         if (!this['for']) return [3 /*break*/, 12];
-                        _c = this['for'], value = _c.value, alias = _c.alias;
+                        _e = this['for'], value = _e.value, alias = _e.alias;
                         collection = evalToken(value, ctx);
                         collection = toEnumerable(collection);
                         scope['forloop'] = new ForloopDrop(collection.length, value.getText(), alias);
-                        _e.label = 3;
+                        _g.label = 3;
                     case 3:
-                        _e.trys.push([3, 9, 10, 11]);
+                        _g.trys.push([3, 9, 10, 11]);
                         collection_1 = __values(collection), collection_1_1 = collection_1.next();
-                        _e.label = 4;
+                        _g.label = 4;
                     case 4:
                         if (!!collection_1_1.done) return [3 /*break*/, 8];
                         item = collection_1_1.value;
                         scope[alias] = item;
                         return [4 /*yield*/, liquid._parsePartialFile(filepath, childCtx.sync, this['currentFile'])];
                     case 5:
-                        templates = _e.sent();
+                        templates = _g.sent();
                         return [4 /*yield*/, liquid.renderer.renderTemplates(templates, childCtx, emitter)];
                     case 6:
-                        _e.sent();
-                        scope.forloop.next();
-                        _e.label = 7;
+                        _g.sent();
+                        scope['forloop'].next();
+                        _g.label = 7;
                     case 7:
                         collection_1_1 = collection_1.next();
                         return [3 /*break*/, 4];
                     case 8: return [3 /*break*/, 11];
                     case 9:
-                        e_1_1 = _e.sent();
+                        e_1_1 = _g.sent();
                         e_1 = { error: e_1_1 };
                         return [3 /*break*/, 11];
                     case 10:
                         try {
-                            if (collection_1_1 && !collection_1_1.done && (_d = collection_1.return)) _d.call(collection_1);
+                            if (collection_1_1 && !collection_1_1.done && (_f = collection_1.return)) _f.call(collection_1);
                         }
                         finally { if (e_1) throw e_1.error; }
                         return [7 /*endfinally*/];
                     case 11: return [3 /*break*/, 15];
                     case 12: return [4 /*yield*/, liquid._parsePartialFile(filepath, childCtx.sync, this['currentFile'])];
                     case 13:
-                        templates = _e.sent();
+                        templates = _g.sent();
                         return [4 /*yield*/, liquid.renderer.renderTemplates(templates, childCtx, emitter)];
                     case 14:
-                        _e.sent();
-                        _e.label = 15;
+                        _g.sent();
+                        _g.label = 15;
                     case 15: return [2 /*return*/];
                 }
             });
@@ -8286,11 +8392,12 @@ module.exports = zeros
         return FilterMap;
     }());
 
+    var version = '9.28.4';
     var Liquid = /** @class */ (function () {
         function Liquid(opts) {
             var _this = this;
             if (opts === void 0) { opts = {}; }
-            this.options = applyDefault(normalize(opts));
+            this.options = normalize(opts);
             this.parser = new Parser(this);
             this.renderer = new Render();
             this.filters = new FilterMap(this.options.strictFilters, this);
@@ -8406,10 +8513,13 @@ module.exports = zeros
             var self = this; // eslint-disable-line
             var firstCall = true;
             return function (filePath, ctx, callback) {
-                var _a;
+                var _a, _b, _c;
                 if (firstCall) {
                     firstCall = false;
-                    (_a = self.options.root).unshift.apply(_a, __spread(normalizeDirectoryList(this.root)));
+                    var dirs = normalizeDirectoryList(this.root);
+                    (_a = self.options.root).unshift.apply(_a, __spread(dirs));
+                    (_b = self.options.layouts).unshift.apply(_b, __spread(dirs));
+                    (_c = self.options.partials).unshift.apply(_c, __spread(dirs));
                 }
                 self.renderFile(filePath, ctx).then(function (html) { return callback(null, html); }, callback);
             };
@@ -8445,15 +8555,16 @@ module.exports = zeros
     exports.toPromise = toPromise;
     exports.toThenable = toThenable;
     exports.toValue = toValue;
+    exports.version = version;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
 }));
 
 
-},{}],90:[function(require,module,exports){
+},{}],93:[function(require,module,exports){
 
-},{}],91:[function(require,module,exports){
+},{}],94:[function(require,module,exports){
 (function (process){(function (){
 // 'path' module extracted from Node.js v8.11.1 (only the posix part)
 // transplited with Babel
@@ -8986,7 +9097,7 @@ posix.posix = posix;
 module.exports = posix;
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":92}],92:[function(require,module,exports){
+},{"_process":95}],95:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
