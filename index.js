@@ -30,6 +30,10 @@ const gt = {
 
         if (type === "string") return JSON.stringify(obj)
         if (type === "number") return obj
+        if (type === "boolean") return JSON.stringify(obj.toString())
+        if (type === "function") return JSON.stringify("<function>")
+        if (type === "undefined") return JSON.stringify("undefined")
+        if (obj === null) return JSON.stringify("null")
 
         const pairs = []
 
@@ -38,7 +42,7 @@ const gt = {
           pairs.push(`"` + key + `" -> ` + val)
         })
 
-        return "{" + pairs.join(", ") + "}"
+        return "{ " + pairs.join(", ") + " }"
       }
 
       return recursiveParse(obj)
