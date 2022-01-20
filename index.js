@@ -55,7 +55,7 @@ const gt = {
     // you should probably use the new `liquidBuild` function instead!
     build(template, dict) {
       // variable syntax: {$ variable $}
-      const out = template
+      let out = template
       const rx = /\{\$ ?(.*?) ?\$\}/g
       placeholders = template.match(rx)
 
