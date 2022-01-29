@@ -50,6 +50,10 @@ const gt = {
   },
 
   template: {
+    registerLiquidFilter(name, fn) {
+      liquid.registerFilter(name, fn)
+    },
+
     // `build` is the old function;
     // it's used to replace {$ variable $} with dict.variable;
     // you should probably use the new `liquidBuild` function instead!
