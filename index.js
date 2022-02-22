@@ -10,8 +10,6 @@ if (!String.prototype.replaceAll) {
 }
 
 const gt = {
-  SHOULD_SHOW_WARNINGS: true,
-
   date: {
     toGTDateObject(date) {
       const out = {
@@ -64,12 +62,6 @@ const gt = {
 
   program: {
     extractQuestions(text) {
-      if (gt.SHOULD_SHOW_WARNINGS) {
-        console.warn(
-          "WARNING: The `gt.program.extractQuestions` function is highly experimental and may not always work correctly!"
-        )
-      }
-
       const otherKeywords = [
         "audio",
         "back",
@@ -264,13 +256,20 @@ const gt = {
         })
       })
 
-      const out = new DataFrame(values)
+      let out = new DataFrame(values)
+      const isASeries = out.values.length === 1
       out.columns = questionKeywords
 
-      return out.get(
+      out = out.get(
         null,
         ["question"].concat(questionKeywords.filter(col => col !== "question"))
       )
+
+      if (isASeries) {
+        return out.toDataFrame().transpose()
+      } else {
+        return out
+      }
     },
   },
 }

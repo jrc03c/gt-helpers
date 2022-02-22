@@ -100,7 +100,7 @@ console.log(gtDate)
 // '{ "year" -> 2019, "month" -> 12, "day" -> 10, "hour" -> 10, "minute" -> 30 }'
 ```
 
-It's also possible (but experimental) to extract questions from the text of a GT program like this:
+It's also possible (but **highly experimental**) to extract questions from the text of a GT program like this:
 
 ```js
 // NOTE: Remember that GT programs must be indented with tabs!
