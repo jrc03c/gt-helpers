@@ -181,6 +181,12 @@ const gt = {
           const matches = line.split(/[^\s]/g)
           if (!matches) return
 
+          if (matches[0].includes(" ")) {
+            throw new Error(
+              "Your GT program's indentation includes spaces! GT programs should only be indented with tabs."
+            )
+          }
+
           if (matches[0] === indentation) {
             line = line.trim()
 

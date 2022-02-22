@@ -99,3 +99,30 @@ const gtDate = gt.date.toGTDateObject(date)
 console.log(gtDate)
 // '{ "year" -> 2019, "month" -> 12, "day" -> 10, "hour" -> 10, "minute" -> 30 }'
 ```
+
+It's also possible (but experimental) to extract questions from the text of a GT program like this:
+
+```js
+const gt = require(".")
+const program = `
+	*question: How old are you?
+		*type: number
+		*save: age
+
+	*question: What is your name?
+		*save: name
+
+	*question: Which of these is your favorite ice cream flavor?
+		*tip: If these aren't your favorites, then just pick which one of the three you like best.
+		Chocolate
+		Vanilla
+		Strawberry
+`
+
+const questionData = gt.program.extractQuestions(program)
+questionData.print()
+```
+
+![](https://i.ibb.co/3c329sm/questions.png)
+
+The returned data is a [js-math-tools](https://github.com/jrc03c/js-math-tools) `DataFrame`.
