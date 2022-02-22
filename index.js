@@ -10,6 +10,8 @@ if (!String.prototype.replaceAll) {
 }
 
 const gt = {
+  SHOULD_SHOW_WARNINGS: true,
+
   date: {
     toGTDateObject(date) {
       const out = {
@@ -62,9 +64,11 @@ const gt = {
 
   program: {
     extractQuestions(text) {
-      console.warn(
-        "WARNING: The `gt.program.extractQuestions` function is highly experimental and may not always work correctly!"
-      )
+      if (gt.SHOULD_SHOW_WARNINGS) {
+        console.warn(
+          "WARNING: The `gt.program.extractQuestions` function is highly experimental and may not always work correctly!"
+        )
+      }
 
       const otherKeywords = [
         "audio",
@@ -240,6 +244,10 @@ const gt = {
 
       if (Object.keys(temp).length > 0) {
         questions.push(temp)
+      }
+
+      if (questions.length === 0) {
+        return new DataFrame()
       }
 
       const values = questions.map(question => {
