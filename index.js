@@ -1,12 +1,7 @@
-const {
-  DataFrame,
-  isArray,
-  isUndefined,
-  set,
-  sort,
-} = require("@jrc03c/js-math-tools")
+const { DataFrame, isArray, isUndefined } = require("@jrc03c/js-math-tools")
 const { Liquid } = require("liquidjs")
 const liquid = new Liquid()
+const { stringifyArray } = require("./helpers.js")
 
 if (!String.prototype.replaceAll) {
   String.prototype.replaceAll = function (a, b) {
@@ -256,7 +251,7 @@ const gt = {
         return questionKeywords.map(col => {
           if (!isUndefined(question[col])) {
             if (isArray(question[col])) {
-              return question[col].join(" | ")
+              return stringifyArray(question[col])
             } else {
               return question[col]
             }

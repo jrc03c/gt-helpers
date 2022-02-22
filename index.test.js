@@ -1,5 +1,6 @@
 const gt = require(".")
-const { DataFrame, isEqual, sort } = require("@jrc03c/js-math-tools")
+const { DataFrame, isEqual } = require("@jrc03c/js-math-tools")
+const { stringifyArray } = require("./helpers.js")
 
 test("tests that JS objects can be converted to GT associations", () => {
   const rights = [
@@ -59,6 +60,10 @@ test("tests that questions can be successfully extracted from a GT program strin
 			Chocolate
 			Vanilla
 			Strawberry
+
+		*question: Do you like penguins?
+			*answers: [["Yes", 1], ["No", 0]]
+			*save: likesPenguins
 	`
 
   const yPred = gt.program.extractQuestions(program).get(null, keywords)
@@ -111,7 +116,7 @@ test("tests that questions can be successfully extracted from a GT program strin
 
       {
         after: undefined,
-        answers: "Chocolate | Vanilla | Strawberry",
+        answers: `["Chocolate", "Vanilla", "Strawberry"]`,
         before: undefined,
         blank: undefined,
         confirm: undefined,
@@ -128,6 +133,28 @@ test("tests that questions can be successfully extracted from a GT program strin
         throwaway: undefined,
         time: undefined,
         tip: "If none of them is your favorite, then just pick whichever one you like most.",
+        type: undefined,
+      },
+
+      {
+        after: undefined,
+        answers: `[["Yes", 1], ["No", 0]]`,
+        before: undefined,
+        blank: undefined,
+        confirm: undefined,
+        countdown: undefined,
+        date: undefined,
+        default: undefined,
+        max: undefined,
+        min: undefined,
+        multiple: undefined,
+        question: "Do you like penguins?",
+        save: "likesPenguins",
+        shuffle: undefined,
+        tags: undefined,
+        throwaway: undefined,
+        time: undefined,
+        tip: undefined,
         type: undefined,
       },
     ].map(item => keywords.map(keyword => item[keyword]))
