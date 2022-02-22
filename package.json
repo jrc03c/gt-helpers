@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "browserify -e index.js -o dist/gt-helpers.js",
-    "watch": "watchify -e index.js -o dist/gt-helpers.js"
+    "build": "esbuild index.js --bundle --outfile=dist/gt-helpers.js --minify",
+    "watch": "esbuild index.js --bundle --outfile=dist/gt-helpers.js --minify --watch",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -15,6 +16,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@jrc03c/js-math-tools": "github:jrc03c/js-math-tools",
     "liquidjs": "^9.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.14.23",
+    "eslint": "^8.9.0"
   }
 }
