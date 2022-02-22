@@ -103,7 +103,8 @@ console.log(gtDate)
 It's also possible (but experimental) to extract questions from the text of a GT program like this:
 
 ```js
-const gt = require(".")
+// NOTE: Remember that GT programs must be indented with tabs!
+
 const program = `
 	*question: How old are you?
 		*type: number
