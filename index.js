@@ -1,4 +1,10 @@
-const { DataFrame, isArray, set, sort } = require("@jrc03c/js-math-tools")
+const {
+  DataFrame,
+  isArray,
+  isUndefined,
+  set,
+  sort,
+} = require("@jrc03c/js-math-tools")
 const { Liquid } = require("liquidjs")
 const liquid = new Liquid()
 
@@ -158,6 +164,7 @@ const gt = {
         "type",
       ]
 
+      let isCollecting = false
       let indentation = ""
       let temp = {}
       const lines = text.split("\n")
@@ -171,6 +178,7 @@ const gt = {
             temp = {}
           }
 
+          isCollecting = true
           indentation = line.split("*")[0] + "\t"
           temp.question = line.split(":").slice(1).join(":").trim()
         } else {
@@ -183,7 +191,9 @@ const gt = {
             )
           }
 
-          if (matches[0] === indentation) {
+          if (matches[0].length < indentation.length) {
+            isCollecting = false
+          } else if (matches[0] === indentation && isCollecting) {
             line = line.trim()
 
             if (line.length === 0) return
@@ -244,14 +254,14 @@ const gt = {
 
       const values = questions.map(question => {
         return questionKeywords.map(col => {
-          if (question[col]) {
+          if (!isUndefined(question[col])) {
             if (isArray(question[col])) {
               return question[col].join(" | ")
             } else {
               return question[col]
             }
           } else {
-            return null
+            return undefined
           }
         })
       })
