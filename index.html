@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css" />
+    <style>
+      p {
+        margin-bottom: 1.5em;
+      }
+
+      .textarea {
+        margin-bottom: 1.5em;
+        font-size: 0.75em;
+        font-family: monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="section">
+      <div class="container">
+        <h1 class="title">gt-helpers</h1>
+
+        <p>
+          Paste the text of your GT program below and then download the parsed
+          questions as a CSV or JSON file.
+        </p>
+
+        <div id="app">
+          <div v-if="message.length > 0" class="notification is-danger">
+            <button class="delete" @click="message = ''"></button>
+
+            {{ message }}
+          </div>
+
+          <textarea v-model="source" class="textarea"></textarea>
+
+          <p>
+            <button class="button" @click="downloadCSV">Download CSV</button>
+            <button class="button" @click="downloadJSON">Download JSON</button>
+          </p>
+        </div>
+
+        <p>
+          ⟶
+          <a href="https://github.com/jrc03c/gt-helpers">
+            https://github.com/jrc03c/gt-helpers
+          </a>
+        </p>
+      </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+    <script src="dist/gt-helpers.js"></script>
+    <script>
+      const app = new Vue({
+        el: "#app",
+
+        data: {
+          message: "",
+          source: "",
+        },
+
+        methods: {
+          downloadCSV() {
+            const self = this
+
+            try {
+              gt.program
+                .extractQuestions(self.source)
+                .toCSV("questions.csv", false)
+            } catch (e) {
+              self.message = e
+            }
+          },
+
+          downloadJSON() {
+            const self = this
+
+            try {
+              const df = gt.program.extractQuestions(self.source)
+              df.index = df.index.map(v => v.replaceAll("row", "question"))
+              df.toJSON("questions.json", 0)
+            } catch (e) {
+              self.message = e
+            }
+          },
+        },
+      })
+    </script>
+  </body>
+</html>
