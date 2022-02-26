@@ -63,6 +63,8 @@
         data: {
           message: "",
           source: "",
+          // source:
+          // "*question: Which of these ice cream flavors is your favorite?\n\t*save: theirFavoriteIceCream\n\t*throwaway\n\tChocolate\n\tStrawberry\n\tVanilla",
         },
 
         methods: {
@@ -89,6 +91,12 @@
               self.message = e
             }
           },
+        },
+
+        async mounted() {
+          const self = this
+          const response = await fetch("sample.gt")
+          self.source = await response.text()
         },
       })
     </script>

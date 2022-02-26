@@ -1,0 +1,38 @@
+*question: What is your name?
+	*before: My name is
+	*save: theirName
+
+*question: How old are you?
+	*type: slider
+	*min: 0
+	*max: 150
+	*save: theirAge
+
+*question: Which of these ice cream flavors is your favorite?
+	*tip: If none of them is your favorite, then just pick whichever one you like most.
+	*save: theirFavoriteIceCream
+
+	Chocolate
+
+		*question: Yay! Would you like to be my friend?
+			Yes
+			No
+
+	Vanilla
+
+		Hm. I'm not sure I trust people who prefer vanilla ice cream.
+		*button: Okay
+
+	Strawberry
+
+		*question: Would you like some literature on why chocolate is superior?
+			Yes
+				Well, sorry; I don't have any.
+				*button: Okay
+			No
+				That's good. I didn't have any anyway.
+				*button: Okay
+
+*question: Do you like penguins?
+	*save: likesPenguins
+	*answers: [["Yes", 1], ["No", 0]]
