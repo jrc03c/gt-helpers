@@ -1,9 +1,56 @@
+:root {
+  --global-padding: 1.5em;
+}
+
+html,
+body {
+  overflow: hidden;
+}
+
 p {
-  margin-bottom: 1.5em;
+  margin-bottom: var(--global-padding);
 }
 
 .textarea {
-  margin-bottom: 1.5em;
+  margin-bottom: var(--global-padding);
   font-size: 0.75em;
   font-family: monospace;
+}
+
+.gt-editor {
+  border-radius: 4px;
+  line-height: var(--global-padding);
+  border-left: 0.5em solid #00e5aa;
+  margin: var(--global-padding) 0;
+}
+
+.gt-editor * {
+  font-family: "Ubuntu Mono", monospace !important;
+}
+
+.gt-editor-inner {
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  font-size: 14px !important;
+}
+
+.floating-notification {
+  opacity: 0;
+  position: fixed;
+  bottom: -6em;
+  left: var(--global-padding);
+  width: calc(100vw - calc(2 * var(--global-padding)));
+  margin: 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  transition: bottom 0.25s ease-in-out, opacity 0.25s ease-in-out;
+}
+
+.floating-notification.is-active {
+  opacity: 1;
+  bottom: 0;
+  transition: bottom 0.25s ease-in-out, opacity 0.25s ease-in-out;
 }

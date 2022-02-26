@@ -21,13 +21,17 @@
         </p>
 
         <div id="app">
-          <div v-if="message.length > 0" class="notification is-danger">
-            <button class="delete" @click="message = ''"></button>
+          <div
+            ref="message"
+            class="notification is-danger floating-notification">
+            <button
+              class="delete"
+              @click="$refs.message.classList.remove('is-active')"></button>
 
             {{ message }}
           </div>
 
-          <textarea v-model="source" class="textarea"></textarea>
+          <gt-editor :code="source" @updated="onSourceUpdate"></gt-editor>
 
           <p>
             <button class="button" @click="downloadCSV">Download CSV</button>

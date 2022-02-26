@@ -338,9 +338,7 @@ class GuidedTrackMode extends Mode {
   }
 }
 
-if (typeof module !== "undefined") {
-  module.exports = {
-    CustomHighlightRules,
-    GuidedTrackMode,
-  }
+module.exports = {
+  CustomHighlightRules,
+  GuidedTrackMode,
 }
