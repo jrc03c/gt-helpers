@@ -1,4 +1,4 @@
-const { DataFrame, isArray, isUndefined } = require("@jrc03c/js-math-tools")
+const { DataFrame, isArray } = require("@jrc03c/js-math-tools")
 const { Liquid } = require("liquidjs")
 const liquid = new Liquid()
 const { stringifyArray } = require("./helpers.js")
@@ -8,6 +8,10 @@ if (!String.prototype.replaceAll) {
     const self = this
     return self.split(a).join(b)
   }
+}
+
+function getIndentation(text) {
+  return text.split(/[^\s]/g)[0]
 }
 
 const gt = {
@@ -159,122 +163,120 @@ const gt = {
         "type",
       ]
 
-      let isCollecting = false
-      let indentation = ""
-      let temp = {}
       const lines = text.split("\n")
       const questions = []
 
-      lines.forEach(line => {
-        if (line.includes("*question:")) {
-          if (Object.keys(temp).length > 0) {
-            questions.push(temp)
-            indentation = ""
-            temp = {}
+      lines.forEach((line, i) => {
+        // if this is a question line...
+        if (line.trim().startsWith("*question:")) {
+          // define question object
+          const question = {
+            question: line.replace("*question: ", "").trim(),
           }
 
-          isCollecting = true
-          indentation = line.split("*")[0] + "\t"
-          temp.question = line.split(":").slice(1).join(":").trim()
-        } else {
-          const matches = line.split(/[^\s]/g)
-          if (!matches) return
+          // find the index of the next line that whose indentation is the same
+          // length or shorter than this line's indentation AND which is not an
+          // empty line
+          const indentation = getIndentation(line)
 
-          if (matches[0].includes(" ")) {
-            throw new Error(
-              "Your GT program's indentation includes spaces! GT programs should only be indented with tabs."
-            )
-          }
+          const j = (() => {
+            const index = lines.findIndex((other, j) => {
+              return (
+                j > i &&
+                getIndentation(other).length <= indentation.length &&
+                other.trim().length > 0
+              )
+            })
 
-          if (matches[0].length < indentation.length) {
-            isCollecting = false
-          } else if (matches[0] === indentation && isCollecting) {
-            line = line.trim()
+            if (index < 0) return lines.length
+            return index
+          })()
 
-            if (line.length === 0) return
+          // get the subsequent lines whose indentation is exactly this one's
+          // plus a single tab
+          const otherLines = lines
+            .slice(i + 1, j)
+            .filter(other => getIndentation(other) === indentation + "\t")
 
-            const firstWord = line
-              .split(" ")[0]
-              .replaceAll("*", "")
-              .replaceAll(":", "")
-              .trim()
+          // if there are such lines that are indented by one tab...
+          if (otherLines.length > 0) {
+            // for each such line...
+            otherLines.forEach(other => {
+              // trim the line
+              other = other.trim()
 
-            if (line.startsWith(">>")) {
-              return
-            } else if (
-              line.startsWith("*") &&
-              questionKeywords.some(keyword => keyword.match(firstWord))
-            ) {
-              const parts = line.split(":")
-              const key = parts[0].replaceAll("*", "").trim()
-              const value = parts.slice(1).join(":").trim()
+              // check to see if the line starts with a keyword;
+              // if it does, then set its key-value pair in the question
+              // object
+              let startsWithAKeyword = false
 
-              if (value.length > 0) {
-                try {
-                  temp[key] = JSON.parse(value)
-                } catch (e) {
-                  temp[key] = value
+              questionKeywords.forEach(keyword => {
+                if (startsWithAKeyword) return
+
+                if (other.startsWith("*" + keyword)) {
+                  startsWithAKeyword = true
+
+                  const value = (() => {
+                    // if the line includes a colon, then it probably has a
+                    // key-value pair; so extract the value and return it
+                    if (other.includes(":")) {
+                      const parts = other.split(":")
+                      const value = parts.slice(1).join(":").trim()
+
+                      try {
+                        return JSON.parse(value)
+                      } catch (e) {
+                        return value
+                      }
+                    }
+
+                    // otherwise, it's probably just a boolean; so just
+                    // return true
+                    else {
+                      return true
+                    }
+                  })()
+
+                  question[keyword] = value
                 }
-              } else {
-                temp[key] = true
-              }
-            } else {
-              if (otherKeywords.some(keyword => keyword.match(firstWord))) {
-                return
-              }
+              })
 
-              if (!temp.question) {
-                return
-              }
+              // if the line DIDN'T start with a keyword, then just add the
+              // line to the list of answers
+              if (!startsWithAKeyword) {
+                if (!question.answers) {
+                  question.answers = []
+                }
 
-              if (!temp.answers) {
-                temp.answers = []
+                question.answers.push(other)
               }
-
-              if (isArray(temp.answers)) {
-                temp.answers.push(line)
-              }
-            }
+            })
           }
+
+          questions.push(question)
         }
       })
 
-      if (Object.keys(temp).length > 0) {
-        questions.push(temp)
-      }
+      const out = new DataFrame(
+        questions.map(question =>
+          questionKeywords.map(keyword => {
+            const value = question[keyword]
 
-      if (questions.length === 0) {
-        return new DataFrame()
-      }
-
-      const values = questions.map(question => {
-        return questionKeywords.map(col => {
-          if (!isUndefined(question[col])) {
-            if (isArray(question[col])) {
-              return stringifyArray(question[col])
+            if (isArray(value)) {
+              return stringifyArray(value)
             } else {
-              return question[col]
+              return value
             }
-          } else {
-            return undefined
-          }
-        })
-      })
-
-      let out = new DataFrame(values)
-      const isASeries = out.values.length === 1
-      out.columns = questionKeywords
-
-      out = out.get(
-        null,
-        ["question"].concat(questionKeywords.filter(col => col !== "question"))
+          })
+        )
       )
 
-      if (isASeries) {
-        return out.toDataFrame().transpose()
-      } else {
-        return out
-      }
+      out.columns = questionKeywords
+
+      return out.get(
+        null,
+        ["question"].concat(questionKeywords.filter(k => k !== "question"))
+      )
     },
   },
 }

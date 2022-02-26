@@ -2,13 +2,13 @@ const { isArray, isString } = require("@jrc03c/js-math-tools")
 
 function stringifyArray(x) {
   return `[${x
-    .map(item => {
-      if (isArray(item)) {
-        return stringifyArray(item)
-      } else if (isString(item)) {
-        return `"${item}"`
+    .map(value => {
+      if (isArray(value)) {
+        return stringifyArray(value)
+      } else if (isString(value)) {
+        return `'${value}'`
       } else {
-        return item
+        return JSON.stringify(value)
       }
     })
     .join(", ")}]`
