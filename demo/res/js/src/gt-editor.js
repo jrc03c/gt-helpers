@@ -55,24 +55,8 @@ module.exports = Vue.component("gt-editor", {
     session.setUseWrapMode(true)
     session.setWrapLimitRange()
 
-    let maxLines = 5
-    editor.setOption("minLines", maxLines)
-    editor.setOption("maxLines", maxLines)
     Vue.set(self, "editor", editor)
     self.$el.classList.add("language-gt")
-
-    let interval = setInterval(() => {
-      const currentHeight = document.body.getBoundingClientRect().height
-
-      if (currentHeight + 21 < window.innerHeight) {
-        maxLines++
-        editor.setOption("minLines", maxLines)
-        editor.setOption("maxLines", maxLines)
-        editor.resize()
-      } else {
-        clearInterval(interval)
-      }
-    }, 1)
 
     editor.on(
       "change",

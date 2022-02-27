@@ -11,45 +11,38 @@
     <link rel="stylesheet" type="text/css" href="res/css/custom.css" />
   </head>
   <body>
-    <section class="section">
-      <div class="container">
-        <h1 class="title">gt-helpers</h1>
+    <h1 class="title">gt-helpers</h1>
 
-        <p>
-          This tool lets you extract questions from a GuidedTrack program into a
-          CSV or JSON file. Just paste in your code in the editor below and
-          click one of the buttons to download the parsed questions. NOTE: Any
-          code that isn't part of a question (e.g., conditionals, loops, etc.)
-          will be ignored.
-        </p>
+    <p>
+      This tool lets you extract questions from a GuidedTrack program into a CSV
+      or JSON file. Just paste in your code in the editor below and click one of
+      the buttons to download the parsed questions. NOTE: Any code that isn't
+      part of a question (e.g., conditionals, loops, etc.) will be ignored.
+    </p>
 
-        <div id="app">
-          <div
-            ref="message"
-            class="notification is-danger floating-notification">
-            <button
-              class="delete"
-              @click="$refs.message.classList.remove('is-active')"></button>
+    <div id="app">
+      <div ref="message" class="notification is-danger floating-notification">
+        <button
+          class="delete"
+          @click="$refs.message.classList.remove('is-active')"></button>
 
-            {{ message }}
-          </div>
-
-          <gt-editor :code="source" @updated="onSourceUpdate"></gt-editor>
-
-          <p>
-            <button class="button" @click="downloadCSV">Download CSV</button>
-            <button class="button" @click="downloadJSON">Download JSON</button>
-          </p>
-        </div>
-
-        <p class="m-0">
-          ⟶
-          <a href="https://github.com/jrc03c/gt-helpers">
-            https://github.com/jrc03c/gt-helpers
-          </a>
-        </p>
+        {{ message }}
       </div>
-    </section>
+
+      <gt-editor :code="source" @updated="onSourceUpdate"></gt-editor>
+
+      <p>
+        <button class="button" @click="downloadCSV">Download CSV</button>
+        <button class="button" @click="downloadJSON">Download JSON</button>
+      </p>
+    </div>
+
+    <p class="m-0">
+      ⟶
+      <a href="https://github.com/jrc03c/gt-helpers">
+        https://github.com/jrc03c/gt-helpers
+      </a>
+    </p>
 
     <script src="res/js/bundle.js"></script>
   </body>
