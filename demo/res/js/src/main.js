@@ -1,7 +1,14 @@
 const Vue = require("vue/dist/vue.min.js")
 const gt = require("../../../..")
 const GTEditorComponent = require("./gt-editor.js")
-const { Series } = require("@jrc03c/js-math-tools")
+const papa = require("papaparse")
+
+function downloadTextAsCSV(text, filename) {
+  let a = document.createElement("a")
+  a.href = "data:text/csv;charset=utf-8," + encodeURIComponent(text)
+  a.download = filename
+  a.dispatchEvent(new MouseEvent("click"))
+}
 
 const app = new Vue({
   el: "#app",
@@ -34,13 +41,31 @@ const app = new Vue({
       }
 
       try {
-        let out = gt.program.extractQuestions(self.newSource)
+        const out = gt.program.extractQuestions(self.newSource)
 
-        if (out instanceof Series) {
-          out = out.toDataFrame().transpose()
-        }
+        const raw = papa.unparse(
+          out.values.map(row => {
+            const temp = {}
 
-        out.toCSV("questions.csv", false)
+            row.forEach((value, i) => {
+              temp[out.columns[i]] = value
+            })
+
+            return temp
+          }),
+          {
+            quotes: false,
+            quoteChar: '"',
+            escapeChar: '"',
+            delimiter: ",",
+            header: true,
+            newline: "\r\n",
+            skipEmptyLines: false,
+            columns: out.columns,
+          }
+        )
+
+        downloadTextAsCSV(raw, "questions.csv")
       } catch (e) {
         self.message = e
       }
@@ -56,12 +81,7 @@ const app = new Vue({
       }
 
       try {
-        let out = gt.program.extractQuestions(self.newSource)
-
-        if (out instanceof Series) {
-          out = out.toDataFrame().transpose()
-        }
-
+        const out = gt.program.extractQuestions(self.newSource)
         out.index = out.index.map(v => v.replaceAll("row", "question"))
         out.toJSON("questions.json", 0)
       } catch (e) {

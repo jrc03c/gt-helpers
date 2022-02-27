@@ -1,4 +1,4 @@
-const { DataFrame, isArray } = require("@jrc03c/js-math-tools")
+const { DataFrame, Series, isArray } = require("@jrc03c/js-math-tools")
 const { Liquid } = require("liquidjs")
 const liquid = new Liquid()
 const { stringifyArray } = require("./helpers.js")
@@ -174,7 +174,9 @@ const gt = {
                   question.answers = []
                 }
 
-                question.answers.push(other)
+                if (question.answers instanceof Array) {
+                  question.answers.push(other)
+                }
               }
             })
           }
@@ -183,7 +185,7 @@ const gt = {
         }
       })
 
-      const out = new DataFrame(
+      let out = new DataFrame(
         questions.map(question =>
           questionKeywords.map(keyword => {
             const value = question[keyword]
@@ -199,10 +201,16 @@ const gt = {
 
       out.columns = questionKeywords
 
-      return out.get(
+      out = out.get(
         null,
         ["question"].concat(questionKeywords.filter(k => k !== "question"))
       )
+
+      if (out instanceof Series) {
+        return out.toDataFrame().transpose()
+      } else {
+        return out
+      }
     },
   },
 }
