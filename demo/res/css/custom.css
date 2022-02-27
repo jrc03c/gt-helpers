@@ -7,6 +7,12 @@ body {
   overflow: hidden;
 }
 
+h1,
+.title {
+  margin: 0 0 var(--global-padding) 0;
+  padding: 0;
+}
+
 p {
   margin-bottom: var(--global-padding);
 }
@@ -21,7 +27,7 @@ p {
   border-radius: 4px;
   line-height: var(--global-padding);
   border-left: 0.5em solid #00e5aa;
-  margin: var(--global-padding) 0;
+  margin: 0 0 var(--global-padding) 0;
 }
 
 .gt-editor * {
