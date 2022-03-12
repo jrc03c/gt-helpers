@@ -268,8 +268,5 @@ test("tests that questions can be successfully extracted from a GT program strin
   yTrue.columns = keywords
   yTrue = yTrue.get(null, keywords)
 
-  yPred.print()
-  yTrue.print()
-
   expect(isEqual(yPred, yTrue)).toBe(true)
 })

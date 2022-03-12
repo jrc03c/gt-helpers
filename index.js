@@ -185,6 +185,12 @@ const gt = {
         }
       })
 
+      if (questions.length === 0) {
+        const out = new DataFrame([questionKeywords.map(() => undefined)])
+        out.columns = questionKeywords
+        return out
+      }
+
       let out = new DataFrame(
         questions.map(question =>
           questionKeywords.map(keyword => {
