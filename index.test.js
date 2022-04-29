@@ -10,7 +10,7 @@ test("tests that JS objects can be converted to GT associations", () => {
     [false, '"false"'],
     [null, '"null"'],
     [undefined, '"undefined"'],
-    [[2, 3, 4], '{ "0" -> 2, "1" -> 3, "2" -> 4 }'],
+    [[2, 3, 4], "[2, 3, 4]"],
     [{ hello: "world" }, '{ "hello" -> "world" }'],
     [() => {}, '"<function>"'],
   ]
@@ -18,6 +18,32 @@ test("tests that JS objects can be converted to GT associations", () => {
   rights.forEach(pair => {
     expect(gt.object.toAssociation(pair[0])).toBe(pair[1])
   })
+
+  class Person {
+    constructor(name, age) {
+      const self = this
+      self.name = name
+      self.age = age
+      self.friends = []
+    }
+
+    addFriend(friend) {
+      const self = this
+      self.friends.push(friend)
+      return self
+    }
+  }
+
+  const alice = new Person("Alice", 23)
+  const bob = new Person("Bob", 45)
+  const charlize = new Person("Charlize", 67)
+  alice.addFriend(bob)
+  alice.addFriend(charlize)
+
+  const x = JSON.parse(JSON.stringify(alice))
+  const yTrue = `{ "name" -> "Alice", "age" -> 23, "friends" -> [{ "name" -> "Bob", "age" -> 45, "friends" -> [] }, { "name" -> "Charlize", "age" -> 67, "friends" -> [] }] }`
+  const yPred = gt.object.toAssociation(x)
+  expect(yPred).toBe(yTrue)
 })
 
 test("tests that questions can be successfully extracted from a GT program string", () => {

@@ -41,14 +41,18 @@ const gt = {
         if (type === "undefined") return JSON.stringify("undefined")
         if (obj === null) return JSON.stringify("null")
 
-        const pairs = []
+        if (obj instanceof Array) {
+          return "[" + obj.map(v => recursiveParse(v)).join(", ") + "]"
+        } else {
+          const pairs = []
 
-        Object.keys(obj).forEach(key => {
-          const val = recursiveParse(obj[key])
-          pairs.push(`"` + key + `" -> ` + val)
-        })
+          Object.keys(obj).forEach(key => {
+            const val = recursiveParse(obj[key])
+            pairs.push(`"` + key + `" -> ` + val)
+          })
 
-        return "{ " + pairs.join(", ") + " }"
+          return "{ " + pairs.join(", ") + " }"
+        }
       }
 
       return recursiveParse(obj)
