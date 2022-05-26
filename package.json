@@ -1,11 +1,11 @@
 {
   "name": "gt-helpers",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.0.1",
+  "description": "some tools to help parse and generate GuidedTrack programs",
+  "main": "src/index.js",
   "scripts": {
-    "build": "esbuild index.js --bundle --outfile=dist/gt-helpers.js --minify",
-    "watch": "esbuild index.js --bundle --outfile=dist/gt-helpers.js --minify --watch",
+    "build": "esbuild src/index.js --bundle --outfile=dist/gt-helpers.js --minify",
+    "watch": "esbuild src/index.js --bundle --outfile=dist/gt-helpers.js --minify --watch",
     "build-demo": "esbuild demo/res/js/src/main.js --bundle --outfile=demo/res/js/bundle.js --minify",
     "watch-demo": "esbuild demo/res/js/src/main.js --bundle --outfile=demo/res/js/bundle.js --minify --watch",
     "test": "jest"
@@ -15,7 +15,7 @@
     "url": "/home/josh/storage/sync/repos/gt-helpers.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "jrc03c",
   "license": "ISC",
   "dependencies": {
     "@jrc03c/js-math-tools": "github:jrc03c/js-math-tools",

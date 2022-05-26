@@ -35,24 +35,24 @@ const fs = require("fs")
 const template = fs.readFileSync("template.gt", "utf8")
 
 const data = {
-  questions: [
-    {
-      text: "Why?",
-      options: JSON.stringify(["Because.", "Why not?", "I said so."]),
-    },
-    {
-      text: "How much?",
-      options: JSON.stringify(["A lot.", "A little.", "None."]),
-    },
-    {
-      text: "When?",
-      options: JSON.stringify(["Now.", "Never."]),
-    },
-  ],
+	questions: [
+		{
+			text: "Why?",
+			options: JSON.stringify(["Because.", "Why not?", "I said so."]),
+		},
+		{
+			text: "How much?",
+			options: JSON.stringify(["A lot.", "A little.", "None."]),
+		},
+		{
+			text: "When?",
+			options: JSON.stringify(["Now.", "Never."]),
+		},
+	],
 }
 
 gt.template.liquidBuild(template, data).then(final => {
-  fs.writeFileSync("final.gt", final, "utf8")
+	fs.writeFileSync("final.gt", final, "utf8")
 })
 ```
 
@@ -124,6 +124,6 @@ const questionData = gt.program.extractQuestions(program)
 questionData.print()
 ```
 
-![](https://i.ibb.co/3c329sm/questions.png)
+![](https://i.ibb.co/ssczPtN/question-data.png)
 
 The returned data is a [js-math-tools](https://github.com/jrc03c/js-math-tools) `DataFrame`.

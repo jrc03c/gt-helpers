@@ -1,0 +1,9 @@
+{
+  "tabWidth": 2,
+  "useTabs": true,
+  "semi": false,
+  "singleQuote": false,
+  "arrowParens": "avoid",
+  "htmlWhitespaceSensitivity": "ignore",
+  "bracketSameLine": true
+}

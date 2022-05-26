@@ -1,4 +1,9 @@
-const { DataFrame, Series, isArray } = require("@jrc03c/js-math-tools")
+const {
+  DataFrame,
+  Series,
+  isArray,
+  isUndefined,
+} = require("@jrc03c/js-math-tools")
 const { Liquid } = require("liquidjs")
 const liquid = new Liquid()
 const { stringifyArray } = require("./helpers.js")
@@ -97,6 +102,17 @@ const gt = {
       const questions = []
 
       lines.forEach((line, i) => {
+        // make sure that the line's indentation doesn't include tabs
+        const pattern = /^\s* \s*[^\s]/g
+
+        if (line.match(pattern)) {
+          throw new Error(
+            `GT programs must be indented with spaces only! The indentation of line ${
+              i + 1
+            } in your program includes spaces!`
+          )
+        }
+
         // if this is a question line...
         if (line.trim().startsWith("*question:")) {
           // define question object
@@ -185,6 +201,16 @@ const gt = {
             })
           }
 
+          // if the question doesn't have an explicit type, then infer it
+          if (isUndefined(question.type)) {
+            if (question.answers) {
+              question.type = "choice"
+            } else {
+              question.type = "text"
+            }
+          }
+
+          // add it to the list of questions
           questions.push(question)
         }
       })
