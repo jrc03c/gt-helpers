@@ -126,4 +126,4 @@ questionData.print()
 
 ![](https://i.ibb.co/ssczPtN/question-data.png)
 
-The returned data is a [js-math-tools](https://github.com/jrc03c/js-math-tools) `DataFrame`.
+The returned data is a [js-math-tools](https://github.com/jrc03c/js-math-tools) `DataFrame`. Additionally, the [demo page](https://gt-helpers.vercel.app/) that accompanies this repo offers the ability to download the data in CSV or JSON formats.
