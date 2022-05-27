@@ -1,6 +1,5 @@
 const gt = require(".")
 const { DataFrame, isEqual, isArray } = require("@jrc03c/js-math-tools")
-const { stringifyArray } = require("./helpers.js")
 
 test("tests that JS objects can be converted to GT associations", () => {
 	const rights = [
@@ -391,10 +390,10 @@ test("tests that questions can be successfully extracted from a GT program strin
 
 				if (keyword === "answers") {
 					if (isArray(value)) {
-						return stringifyArray(value)
+						return JSON.stringify(value)
 					} else {
 						try {
-							return stringifyArray(JSON.parse(value))
+							return JSON.stringify(JSON.parse(value))
 						} catch (e) {
 							return value
 						}
@@ -431,4 +430,40 @@ test("tests that errors are thrown in a program's indentation includes spaces", 
 	expect(() => {
 		gt.program.extractQuestions(okayProgram)
 	}).not.toThrow()
+})
+
+test("tests that 1- and 2-dimensional answer arrays are properly recorded", () => {
+	const program1 = [
+		`*question: What's your name?`,
+		`\tAlice`,
+		`\tBob`,
+		`\tCharlize`,
+	].join("\n")
+
+	const data1 = gt.program.extractQuestions(program1)
+	const answers1True = `["Alice","Bob","Charlize"]`
+	const answers1Pred = data1.get(0, "answers")
+	expect(isEqual(answers1True, answers1Pred)).toBe(true)
+
+	expect(isEqual(JSON.parse(answers1Pred), ["Alice", "Bob", "Charlize"])).toBe(
+		true
+	)
+
+	const program2 = [
+		`*question: Do you like pizza?`,
+		`\t*answers: [["Yes", 1], ["No", 0], ["Maybe so", 0.5]]`,
+	].join("\n")
+
+	const data2 = gt.program.extractQuestions(program2)
+	const answers2True = `[["Yes",1],["No",0],["Maybe so",0.5]]`
+	const answers2Pred = data2.get(0, "answers")
+	expect(isEqual(answers2True, answers2Pred)).toBe(true)
+
+	expect(
+		isEqual(JSON.parse(answers2Pred), [
+			["Yes", 1],
+			["No", 0],
+			["Maybe so", 0.5],
+		])
+	).toBe(true)
 })
