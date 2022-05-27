@@ -124,6 +124,15 @@ const questionData = gt.program.extractQuestions(program)
 questionData.print()
 ```
 
-![](https://i.ibb.co/ssczPtN/question-data.png)
+![](https://i.ibb.co/ydPpbV8/question-data.png)
 
 The returned data is a [js-math-tools](https://github.com/jrc03c/js-math-tools) `DataFrame`. Additionally, the [demo page](https://gt-helpers.vercel.app/) that accompanies this repo offers the ability to download the data in CSV or JSON formats.
+
+You'll notice in the picture above that the "answers" column contains lists of values separated by `" || "`. That's because the `DataFrame` class intentionally doesn't allow storing arrays as values. So, answer lists are turned into strings delimited by `" || "` by default. However, you can pass in another delimiter as the second argument if the default doesn't work for you:
+
+```js
+// (using the above example as a starting point)
+const arrayDelimiter = " ~ "
+const questionData = gt.program.extractQuestion(program, arrayDelimiter)
+// ...
+```

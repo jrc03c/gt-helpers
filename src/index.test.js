@@ -1,6 +1,5 @@
 const gt = require(".")
 const { DataFrame, isEqual, isArray } = require("@jrc03c/js-math-tools")
-const { stringifyArray } = require("./helpers.js")
 
 test("tests that JS objects can be converted to GT associations", () => {
 	const rights = [
@@ -391,10 +390,10 @@ test("tests that questions can be successfully extracted from a GT program strin
 
 				if (keyword === "answers") {
 					if (isArray(value)) {
-						return stringifyArray(value)
+						return value.join(" || ")
 					} else {
 						try {
-							return stringifyArray(JSON.parse(value))
+							return JSON.parse(value).join(" || ")
 						} catch (e) {
 							return value
 						}
@@ -431,4 +430,20 @@ test("tests that errors are thrown in a program's indentation includes spaces", 
 	expect(() => {
 		gt.program.extractQuestions(okayProgram)
 	}).not.toThrow()
+})
+
+test("tests that answers in multiple-choice and checkbox questions can be read as arrays", () => {
+	const program = [
+		"*question: What is your name?",
+		"\tAlice",
+		"\tBob",
+		"\tCharlize",
+	].join("\n")
+
+	const data = gt.program.extractQuestions(program)
+	const answers = data.get(0, "answers").split(" || ")
+
+	expect(answers instanceof Array).toBe(true)
+	expect(answers.length).toBe(3)
+	expect(isEqual(answers, ["Alice", "Bob", "Charlize"])).toBe(true)
 })

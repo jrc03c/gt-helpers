@@ -1,260 +1,261 @@
 const {
-  DataFrame,
-  Series,
-  isArray,
-  isUndefined,
+	DataFrame,
+	Series,
+	isArray,
+	isUndefined,
 } = require("@jrc03c/js-math-tools")
 const { Liquid } = require("liquidjs")
 const liquid = new Liquid()
-const { stringifyArray } = require("./helpers.js")
 
 if (!String.prototype.replaceAll) {
-  String.prototype.replaceAll = function (a, b) {
-    const self = this
-    return self.split(a).join(b)
-  }
+	String.prototype.replaceAll = function (a, b) {
+		const self = this
+		return self.split(a).join(b)
+	}
 }
 
 function getIndentation(text) {
-  return text.split(/[^\s]/g)[0]
+	return text.split(/[^\s]/g)[0]
 }
 
 const gt = {
-  date: {
-    toGTDateObject(date) {
-      const out = {
-        year: date.getFullYear(),
-        month: date.getMonth() + 1,
-        day: date.getDate(),
-        hour: date.getHours(),
-        minute: date.getMinutes(),
-      }
+	date: {
+		toGTDateObject(date) {
+			const out = {
+				year: date.getFullYear(),
+				month: date.getMonth() + 1,
+				day: date.getDate(),
+				hour: date.getHours(),
+				minute: date.getMinutes(),
+			}
 
-      return gt.object.toAssociation(out)
-    },
-  },
+			return gt.object.toAssociation(out)
+		},
+	},
 
-  object: {
-    toAssociation(obj) {
-      function recursiveParse(obj) {
-        const type = typeof obj
+	object: {
+		toAssociation(obj) {
+			function recursiveParse(obj) {
+				const type = typeof obj
 
-        if (type === "string") return JSON.stringify(obj)
-        if (type === "number") return obj
-        if (type === "boolean") return JSON.stringify(obj.toString())
-        if (type === "function") return JSON.stringify("<function>")
-        if (type === "undefined") return JSON.stringify("undefined")
-        if (obj === null) return JSON.stringify("null")
+				if (type === "string") return JSON.stringify(obj)
+				if (type === "number") return obj
+				if (type === "boolean") return JSON.stringify(obj.toString())
+				if (type === "function") return JSON.stringify("<function>")
+				if (type === "undefined") return JSON.stringify("undefined")
+				if (obj === null) return JSON.stringify("null")
 
-        if (obj instanceof Array) {
-          return "[" + obj.map(v => recursiveParse(v)).join(", ") + "]"
-        } else {
-          const pairs = []
+				if (obj instanceof Array) {
+					return "[" + obj.map(v => recursiveParse(v)).join(", ") + "]"
+				} else {
+					const pairs = []
 
-          Object.keys(obj).forEach(key => {
-            const val = recursiveParse(obj[key])
-            pairs.push(`"` + key + `" -> ` + val)
-          })
+					Object.keys(obj).forEach(key => {
+						const val = recursiveParse(obj[key])
+						pairs.push(`"` + key + `" -> ` + val)
+					})
 
-          return "{ " + pairs.join(", ") + " }"
-        }
-      }
+					return "{ " + pairs.join(", ") + " }"
+				}
+			}
 
-      return recursiveParse(obj)
-    },
-  },
+			return recursiveParse(obj)
+		},
+	},
 
-  template: {
-    registerLiquidFilter(name, fn) {
-      liquid.registerFilter(name, fn)
-    },
+	template: {
+		registerLiquidFilter(name, fn) {
+			liquid.registerFilter(name, fn)
+		},
 
-    async liquidBuild(template, dict) {
-      return await liquid.parseAndRender(template, dict)
-    },
-  },
+		async liquidBuild(template, dict) {
+			return await liquid.parseAndRender(template, dict)
+		},
+	},
 
-  program: {
-    extractQuestions(text) {
-      const questionKeywords = [
-        "after",
-        "answers",
-        "before",
-        "blank",
-        "confirm",
-        "countdown",
-        "date",
-        "default",
-        "max",
-        "min",
-        "multiple",
-        "question",
-        "save",
-        "shuffle",
-        "tags",
-        "throwaway",
-        "time",
-        "tip",
-        "type",
-      ]
+	program: {
+		extractQuestions(text, arrayDelimiter) {
+			arrayDelimiter = arrayDelimiter || " || "
 
-      const lines = text.split("\n")
-      const questions = []
+			const questionKeywords = [
+				"after",
+				"answers",
+				"before",
+				"blank",
+				"confirm",
+				"countdown",
+				"date",
+				"default",
+				"max",
+				"min",
+				"multiple",
+				"question",
+				"save",
+				"shuffle",
+				"tags",
+				"throwaway",
+				"time",
+				"tip",
+				"type",
+			]
 
-      lines.forEach((line, i) => {
-        // make sure that the line's indentation doesn't include tabs
-        const pattern = /^\s* \s*[^\s]/g
+			const lines = text.split("\n")
+			const questions = []
 
-        if (line.match(pattern)) {
-          throw new Error(
-            `GT programs must be indented with spaces only! The indentation of line ${
-              i + 1
-            } in your program includes spaces!`
-          )
-        }
+			lines.forEach((line, i) => {
+				// make sure that the line's indentation doesn't include tabs
+				const pattern = /^\s* \s*[^\s]/g
 
-        // if this is a question line...
-        if (line.trim().startsWith("*question:")) {
-          // define question object
-          const question = {
-            question: line.replace("*question: ", "").trim(),
-          }
+				if (line.match(pattern)) {
+					throw new Error(
+						`GT programs must be indented with spaces only! The indentation of line ${
+							i + 1
+						} in your program includes spaces!`
+					)
+				}
 
-          // find the index of the next line that whose indentation is the same
-          // length or shorter than this line's indentation AND which is not an
-          // empty line
-          const indentation = getIndentation(line)
+				// if this is a question line...
+				if (line.trim().startsWith("*question:")) {
+					// define question object
+					const question = {
+						question: line.replace("*question: ", "").trim(),
+					}
 
-          const j = (() => {
-            const index = lines.findIndex((other, j) => {
-              return (
-                j > i &&
-                getIndentation(other).length <= indentation.length &&
-                other.trim().length > 0
-              )
-            })
+					// find the index of the next line that whose indentation is the same
+					// length or shorter than this line's indentation AND which is not an
+					// empty line
+					const indentation = getIndentation(line)
 
-            if (index < 0) return lines.length
-            return index
-          })()
+					const j = (() => {
+						const index = lines.findIndex((other, j) => {
+							return (
+								j > i &&
+								getIndentation(other).length <= indentation.length &&
+								other.trim().length > 0
+							)
+						})
 
-          // get the subsequent lines whose indentation is exactly this one's
-          // plus a single tab
-          const otherLines = lines
-            .slice(i + 1, j)
-            .filter(other => getIndentation(other) === indentation + "\t")
+						if (index < 0) return lines.length
+						return index
+					})()
 
-          // if there are such lines that are indented by one tab...
-          if (otherLines.length > 0) {
-            // for each such line...
-            otherLines.forEach(other => {
-              // trim the line
-              other = other.trim()
+					// get the subsequent lines whose indentation is exactly this one's
+					// plus a single tab
+					const otherLines = lines
+						.slice(i + 1, j)
+						.filter(other => getIndentation(other) === indentation + "\t")
 
-              // check to see if the line starts with a keyword;
-              // if it does, then set its key-value pair in the question
-              // object
-              let startsWithAKeyword = false
+					// if there are such lines that are indented by one tab...
+					if (otherLines.length > 0) {
+						// for each such line...
+						otherLines.forEach(other => {
+							// trim the line
+							other = other.trim()
 
-              questionKeywords.forEach(keyword => {
-                if (startsWithAKeyword) return
+							// check to see if the line starts with a keyword;
+							// if it does, then set its key-value pair in the question
+							// object
+							let startsWithAKeyword = false
 
-                if (other.startsWith("*" + keyword)) {
-                  startsWithAKeyword = true
+							questionKeywords.forEach(keyword => {
+								if (startsWithAKeyword) return
 
-                  const value = (() => {
-                    // if the line includes a colon, then it probably has a
-                    // key-value pair; so extract the value and return it
-                    if (other.includes(":")) {
-                      const parts = other.split(":")
-                      const value = parts.slice(1).join(":").trim()
+								if (other.startsWith("*" + keyword)) {
+									startsWithAKeyword = true
 
-                      try {
-                        return JSON.parse(value)
-                      } catch (e) {
-                        return value
-                      }
-                    }
+									const value = (() => {
+										// if the line includes a colon, then it probably has a
+										// key-value pair; so extract the value and return it
+										if (other.includes(":")) {
+											const parts = other.split(":")
+											const value = parts.slice(1).join(":").trim()
 
-                    // otherwise, it's probably just a boolean; so just
-                    // return true
-                    else {
-                      return true
-                    }
-                  })()
+											try {
+												return JSON.parse(value)
+											} catch (e) {
+												return value
+											}
+										}
 
-                  question[keyword] = value
-                }
-              })
+										// otherwise, it's probably just a boolean; so just
+										// return true
+										else {
+											return true
+										}
+									})()
 
-              // if the line DIDN'T start with a keyword, then just add the
-              // line to the list of answers
-              if (!startsWithAKeyword) {
-                if (!question.answers) {
-                  question.answers = []
-                }
+									question[keyword] = value
+								}
+							})
 
-                if (question.answers instanceof Array) {
-                  question.answers.push(other)
-                }
-              }
-            })
-          }
+							// if the line DIDN'T start with a keyword, then just add the
+							// line to the list of answers
+							if (!startsWithAKeyword) {
+								if (!question.answers) {
+									question.answers = []
+								}
 
-          // if the question doesn't have an explicit type, then infer it
-          if (isUndefined(question.type)) {
-            if (question.answers) {
-              question.type = "choice"
-            } else {
-              question.type = "text"
-            }
-          }
+								if (question.answers instanceof Array) {
+									question.answers.push(other)
+								}
+							}
+						})
+					}
 
-          // add it to the list of questions
-          questions.push(question)
-        }
-      })
+					// if the question doesn't have an explicit type, then infer it
+					if (isUndefined(question.type)) {
+						if (question.answers) {
+							question.type = "choice"
+						} else {
+							question.type = "text"
+						}
+					}
 
-      if (questions.length === 0) {
-        const out = new DataFrame([questionKeywords.map(() => undefined)])
-        out.columns = questionKeywords
-        return out
-      }
+					// add it to the list of questions
+					questions.push(question)
+				}
+			})
 
-      let out = new DataFrame(
-        questions.map(question =>
-          questionKeywords.map(keyword => {
-            const value = question[keyword]
+			if (questions.length === 0) {
+				const out = new DataFrame([questionKeywords.map(() => undefined)])
+				out.columns = questionKeywords
+				return out
+			}
 
-            if (isArray(value)) {
-              return stringifyArray(value)
-            } else {
-              return value
-            }
-          })
-        )
-      )
+			let out = new DataFrame(
+				questions.map(question =>
+					questionKeywords.map(keyword => {
+						const value = question[keyword]
 
-      out.columns = questionKeywords
+						if (isArray(value)) {
+							return value.join(arrayDelimiter)
+						} else {
+							return value
+						}
+					})
+				)
+			)
 
-      out = out.get(
-        null,
-        ["question"].concat(questionKeywords.filter(k => k !== "question"))
-      )
+			out.columns = questionKeywords
 
-      if (out instanceof Series) {
-        return out.toDataFrame().transpose()
-      } else {
-        return out
-      }
-    },
-  },
+			out = out.get(
+				null,
+				["question"].concat(questionKeywords.filter(k => k !== "question"))
+			)
+
+			if (out instanceof Series) {
+				return out.toDataFrame().transpose()
+			} else {
+				return out
+			}
+		},
+	},
 }
 
 if (typeof module !== "undefined") {
-  module.exports = gt
+	module.exports = gt
 }
 
 if (typeof window !== "undefined") {
-  window.gt = gt
+	window.gt = gt
 }
