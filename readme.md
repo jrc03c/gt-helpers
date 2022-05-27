@@ -124,6 +124,8 @@ const questionData = gt.program.extractQuestions(program)
 questionData.print()
 ```
 
-![](https://i.ibb.co/ssczPtN/question-data.png)
+![](https://i.ibb.co/KXL2gg5/question-data.png)
 
 The returned data is a [js-math-tools](https://github.com/jrc03c/js-math-tools) `DataFrame`. Additionally, the [demo page](https://gt-helpers.vercel.app/) that accompanies this repo offers the ability to download the data in CSV or JSON formats.
+
+By the way, you'll notice in the picture above that values in the "answers" column are stored as strings. That's because the `DataFrame` class intentionally does not allow storage of arrays as values. But the string values are created by [`JSON.stringify`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) and should therefore be easily parseable as JSON (e.g., with [`JSON.parse`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse) in JS or [`json.loads`](https://docs.python.org/3/library/json.html#json.loads) in Python).
