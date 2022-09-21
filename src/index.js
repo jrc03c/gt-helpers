@@ -1,9 +1,10 @@
 const {
 	DataFrame,
-	Series,
 	isArray,
 	isUndefined,
+	Series,
 } = require("@jrc03c/js-math-tools")
+
 const { Liquid } = require("liquidjs")
 const liquid = new Liquid()
 
