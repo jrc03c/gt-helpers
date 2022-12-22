@@ -19,7 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "@jrc03c/js-math-tools": "github:jrc03c/js-math-tools",
-    "liquidjs": "^9.0.0"
+    "liquidjs": "^10.0.0"
   },
   "devDependencies": {
     "@jrc03c/make-key": "github:jrc03c/make-key",
