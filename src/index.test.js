@@ -9,9 +9,9 @@ test("tests that JS objects can be converted to GT associations", () => {
 		[false, '"false"'],
 		[null, '"null"'],
 		[undefined, '"undefined"'],
-		[[2, 3, 4], "[2, 3, 4]"],
-		[{ hello: "world" }, '{ "hello" -> "world" }'],
-		[() => {}, '"<function>"'],
+		[[2, 3, 4], "[2,3,4]"],
+		[{ hello: "world" }, '{"hello"->"world"}'],
+		[() => {}, '"<function anonymous>"'],
 	]
 
 	rights.forEach(pair => {
@@ -40,7 +40,7 @@ test("tests that JS objects can be converted to GT associations", () => {
 	alice.addFriend(charlize)
 
 	const x = JSON.parse(JSON.stringify(alice))
-	const yTrue = `{ "name" -> "Alice", "age" -> 23, "friends" -> [{ "name" -> "Bob", "age" -> 45, "friends" -> [] }, { "name" -> "Charlize", "age" -> 67, "friends" -> [] }] }`
+	const yTrue = `{"name"->"Alice","age"->23,"friends"->[{"name"->"Bob","age"->45,"friends"->[]},{"name"->"Charlize","age"->67,"friends"->[]}]}`
 	const yPred = gt.object.toAssociation(x)
 	expect(yPred).toBe(yTrue)
 })

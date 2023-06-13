@@ -30,6 +30,7 @@
 	},
 	"dependencies": {
 		"@jrc03c/js-math-tools": "^0.0.47",
+		"@jrc03c/js-text-tools": "^0.0.12",
 		"liquidjs": "^10.8.2"
 	}
 }

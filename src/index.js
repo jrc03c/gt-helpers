@@ -2,11 +2,12 @@ const {
 	DataFrame,
 	isArray,
 	isUndefined,
+	range,
 	Series,
 } = require("@jrc03c/js-math-tools")
 
 const { Liquid } = require("liquidjs")
-const liquid = new Liquid()
+const { stringify } = require("@jrc03c/js-text-tools")
 
 if (!String.prototype.replaceAll) {
 	String.prototype.replaceAll = function (a, b) {
@@ -15,9 +16,19 @@ if (!String.prototype.replaceAll) {
 	}
 }
 
+function prefix(s, n) {
+	if (!s || n <= 0) return ""
+
+	return range(0, n)
+		.map(() => s)
+		.join("")
+}
+
 function getIndentation(text) {
 	return text.split(/[^\s]/g)[0]
 }
+
+const liquid = new Liquid()
 
 const gt = {
 	date: {
@@ -35,32 +46,88 @@ const gt = {
 	},
 
 	object: {
-		toAssociation(obj) {
-			function recursiveParse(obj) {
+		toAssociation(obj, indentation) {
+			function helper(obj, depth) {
+				const newline = indentation ? "\n" : ""
+				depth = depth || 0
 				const type = typeof obj
 
-				if (type === "string") return JSON.stringify(obj)
+				if (type === "string") return stringify(obj)
 				if (type === "number") return obj
-				if (type === "boolean") return JSON.stringify(obj.toString())
-				if (type === "function") return JSON.stringify("<function>")
-				if (type === "undefined") return JSON.stringify("undefined")
-				if (obj === null) return JSON.stringify("null")
+				if (type === "boolean") return stringify(obj.toString())
+
+				if (type === "function") {
+					return stringify(
+						`<function ${
+							obj.name.trim().length === 0 ? "anonymous" : obj.name
+						}>`
+					)
+				}
+
+				if (type === "undefined") return stringify("undefined")
+				if (obj === null) return stringify("null")
 
 				if (obj instanceof Array) {
-					return "[" + obj.map(v => recursiveParse(v)).join(", ") + "]"
+					if (obj.length === 0) {
+						return prefix(indentation, depth - 1) + "[]"
+					}
+
+					return (
+						prefix(indentation, depth - 1) +
+						"[" +
+						newline +
+						obj
+							.map(v => {
+								let child = helper(v, depth + 1)
+
+								if (typeof child === "string") {
+									child = child.trim()
+								}
+
+								return prefix(indentation, depth + 1) + child
+							})
+							.join("," + newline) +
+						prefix(indentation, depth) +
+						newline +
+						"]"
+					)
 				} else {
-					const pairs = []
+					const keys = Object.keys(obj)
 
-					Object.keys(obj).forEach(key => {
-						const val = recursiveParse(obj[key])
-						pairs.push(`"` + key + `" -> ` + val)
-					})
+					if (keys.length === 0) {
+						return prefix(indentation, depth - 1) + "{}"
+					}
 
-					return "{ " + pairs.join(", ") + " }"
+					return (
+						prefix(indentation, depth - 1) +
+						"{" +
+						newline +
+						keys
+							.map(key => {
+								let child = helper(obj[key], depth + 1)
+
+								if (typeof child === "string") {
+									child = child.trim()
+								}
+
+								return (
+									prefix(indentation, depth + 1) +
+									stringify(key) +
+									(indentation ? " " : "") +
+									"->" +
+									(indentation ? " " : "") +
+									child
+								)
+							})
+							.join("," + newline) +
+						prefix(indentation, depth) +
+						newline +
+						"}"
+					)
 				}
 			}
 
-			return recursiveParse(obj)
+			return helper(obj)
 		},
 	},
 
@@ -227,7 +294,7 @@ const gt = {
 						const value = question[keyword]
 
 						if (isArray(value)) {
-							return JSON.stringify(value)
+							return stringify(value)
 						} else {
 							return value
 						}
