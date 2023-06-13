@@ -1,34 +1,35 @@
 {
-  "name": "gt-helpers",
-  "version": "0.0.1",
-  "description": "some tools to help parse and generate GuidedTrack programs",
-  "main": "src/index.js",
-  "scripts": {
-    "build": "esbuild src/index.js --bundle --outfile=dist/gt-helpers.js --minify",
-    "watch": "esbuild src/index.js --bundle --outfile=dist/gt-helpers.js --minify --watch",
-    "build-demo": "esbuild demo/res/js/src/main.js --bundle --outfile=demo/res/js/bundle.js --minify",
-    "watch-demo": "esbuild demo/res/js/src/main.js --bundle --outfile=demo/res/js/bundle.js --minify --watch",
-    "test": "jest"
-  },
-  "repository": {
-    "type": "git",
-    "url": "/home/josh/storage/sync/repos/gt-helpers.git"
-  },
-  "keywords": [],
-  "author": "jrc03c",
-  "license": "ISC",
-  "dependencies": {
-    "@jrc03c/js-math-tools": "github:jrc03c/js-math-tools",
-    "liquidjs": "^9.0.0"
-  },
-  "devDependencies": {
-    "@jrc03c/make-key": "github:jrc03c/make-key",
-    "brace": "^0.11.1",
-    "esbuild": "^0.14.23",
-    "eslint": "^8.23.1",
-    "jest": "^29.0.3",
-    "lodash": "^4.17.21",
-    "papaparse": "^5.3.1",
-    "vue": "^2.6.14"
-  }
+	"name": "gt-helpers",
+	"version": "0.0.1",
+	"description": "some tools to help parse and generate GuidedTrack programs",
+	"main": "src/index.js",
+	"scripts": {
+		"build": "node build.js",
+		"watch": "node build.js --watch",
+		"test": "jest"
+	},
+	"repository": {
+		"type": "git",
+		"url": "/home/josh/storage/sync/repos/gt-helpers.git"
+	},
+	"keywords": [],
+	"author": "jrc03c",
+	"license": "ISC",
+	"devDependencies": {
+		"@jrc03c/js-csv-helpers": "^0.0.18",
+		"@jrc03c/make-key": "^0.0.11",
+		"@jrc03c/pause": "^0.0.3",
+		"@jrc03c/watch": "^0.0.7",
+		"brace": "^0.11.1",
+		"esbuild": "^0.18.2",
+		"eslint": "^8.42.0",
+		"jest": "^29.5.0",
+		"lodash": "^4.17.21",
+		"prettier": "^2.8.8",
+		"vue": "^3.3.4"
+	},
+	"dependencies": {
+		"@jrc03c/js-math-tools": "^0.0.47",
+		"liquidjs": "^10.8.2"
+	}
 }

@@ -1,5 +1,5 @@
+const { DataFrame, isArray, isEqual } = require("@jrc03c/js-math-tools")
 const gt = require(".")
-const { DataFrame, isEqual, isArray } = require("@jrc03c/js-math-tools")
 
 test("tests that JS objects can be converted to GT associations", () => {
 	const rights = [

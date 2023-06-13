@@ -1,14 +1,7 @@
-const Vue = require("vue/dist/vue.min.js")
+const { createApp } = require("vue")
+const { saveCSV } = require("@jrc03c/js-csv-helpers")
 const gt = require("../../../..")
-const GTEditorComponent = require("./gt-editor.js")
-const papa = require("papaparse")
-
-function downloadTextAsCSV(text, filename) {
-	let a = document.createElement("a")
-	a.href = "data:text/csv;charset=utf-8," + encodeURIComponent(text)
-	a.download = filename
-	a.dispatchEvent(new MouseEvent("click"))
-}
+const GTEditorComponent = require("./gt-editor")
 
 function downloadTextAsJSON(text, filename) {
 	const a = document.createElement("a")
@@ -17,14 +10,34 @@ function downloadTextAsJSON(text, filename) {
 	a.dispatchEvent(new MouseEvent("click"))
 }
 
-const app = new Vue({
-	el: "#app",
-	components: { GTEditorComponent },
+const app = createApp({
+	components: {
+		"gt-editor": GTEditorComponent,
+	},
 
-	data: {
-		message: "",
-		source: "",
-		newSource: "",
+	template: /* html */ `
+		<div class="notification is-danger floating-notification" ref="message">
+			<button
+				@click="$refs.message.classList.remove('is-active')"
+				class="delete"></button>
+
+			{{ message }}
+		</div>
+
+		<gt-editor :code="source" @updated="onSourceUpdate"></gt-editor>
+
+		<p>
+			<button @click="downloadCSV" class="button">Download CSV</button>
+			<button @click="downloadJSON" class="button">Download JSON</button>
+		</p>
+	`,
+
+	data() {
+		return {
+			message: "",
+			source: "",
+			newSource: "",
+		}
 	},
 
 	watch: {
@@ -38,7 +51,7 @@ const app = new Vue({
 	},
 
 	methods: {
-		downloadCSV() {
+		async downloadCSV() {
 			const self = this
 
 			if (self.newSource.trim().length === 0) {
@@ -49,30 +62,7 @@ const app = new Vue({
 
 			try {
 				const out = gt.program.extractQuestions(self.newSource)
-
-				const raw = papa.unparse(
-					out.values.map(row => {
-						const temp = {}
-
-						row.forEach((value, i) => {
-							temp[out.columns[i]] = value
-						})
-
-						return temp
-					}),
-					{
-						quotes: false,
-						quoteChar: '"',
-						escapeChar: '"',
-						delimiter: ",",
-						header: true,
-						newline: "\r\n",
-						skipEmptyLines: false,
-						columns: out.columns,
-					}
-				)
-
-				downloadTextAsCSV(raw, "questions.csv")
+				await saveCSV("questions.csv", out)
 			} catch (e) {
 				self.message = e
 			}
@@ -90,7 +80,6 @@ const app = new Vue({
 			try {
 				const out = gt.program.extractQuestions(self.newSource)
 				out.index = out.index.map(v => v.replaceAll("row", "question"))
-				// out.toJSON("questions.json", 0)
 				const obj = out.toObject(0)
 
 				Object.keys(obj).forEach(key => {
@@ -124,3 +113,5 @@ const app = new Vue({
 		self.newSource = self.source
 	},
 })
+
+app.mount("#app")

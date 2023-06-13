@@ -1,49 +1,36 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css" />
-    <link rel="stylesheet" type="text/css" href="res/css/custom.css" />
-  </head>
-  <body>
-    <h1 class="title">gt-helpers</h1>
+	<head>
+		<title>gt-helpers | demo</title>
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
+		<link
+			href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"
+			rel="stylesheet" />
+		<link href="res/css/custom.css" rel="stylesheet" type="text/css" />
+	</head>
+	<body>
+		<h1 class="title">gt-helpers | demo</h1>
 
-    <p>
-      This tool lets you extract questions from a GuidedTrack program into a CSV
-      or JSON file. Just paste in your code in the editor below and click one of
-      the buttons to download the parsed questions. NOTE: Any code that isn't
-      part of a question (e.g., conditionals, loops, etc.) will be ignored.
-    </p>
+		<p>
+			This tool lets you extract questions from a GuidedTrack program into a CSV
+			or JSON file. Just paste in your code in the editor below and click one of
+			the buttons to download the parsed questions. NOTE: Any code that isn't
+			part of a question (e.g., conditionals, loops, etc.) will be ignored.
+		</p>
 
-    <div id="app">
-      <div ref="message" class="notification is-danger floating-notification">
-        <button
-          class="delete"
-          @click="$refs.message.classList.remove('is-active')"></button>
+		<div id="app"></div>
 
-        {{ message }}
-      </div>
+		<p class="m-0">
+			⟶
+			<a href="https://github.com/jrc03c/gt-helpers">
+				https://github.com/jrc03c/gt-helpers
+			</a>
+		</p>
 
-      <gt-editor :code="source" @updated="onSourceUpdate"></gt-editor>
-
-      <p>
-        <button class="button" @click="downloadCSV">Download CSV</button>
-        <button class="button" @click="downloadJSON">Download JSON</button>
-      </p>
-    </div>
-
-    <p class="m-0">
-      ⟶
-      <a href="https://github.com/jrc03c/gt-helpers">
-        https://github.com/jrc03c/gt-helpers
-      </a>
-    </p>
-
-    <script src="res/js/bundle.js"></script>
-  </body>
+		<script src="res/js/lib/gt-helpers.js"></script>
+		<script src="res/js/bundle.js"></script>
+	</body>
 </html>
