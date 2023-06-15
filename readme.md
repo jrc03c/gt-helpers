@@ -4,7 +4,7 @@
 
 To use in Node:
 
-`npm install --save https://github.com/jrc03c/gt-helpers`
+`npm install --save @jrc03c/gt-helpers`
 
 To use in the browser:
 
@@ -92,12 +92,12 @@ const gt = require("gt-helpers")
 const object = { name: "Josh", position: { x: 5, y: 7 } }
 const association = gt.object.toAssociation(object)
 console.log(association)
-// '{"name" -> "Josh", "position" -> {"x" -> 5, "y" -> 7}}'
+// '{"name"->"Josh","position"->{"x"->5,"y"->7}}'
 
 const date = new Date("December 10, 2019 10:30:00")
 const gtDate = gt.date.toGTDateObject(date)
 console.log(gtDate)
-// '{ "year" -> 2019, "month" -> 12, "day" -> 10, "hour" -> 10, "minute" -> 30 }'
+// '{"year"->2019,"month"->12,"day"->10,"hour"->10,"minute"->30}'
 ```
 
 It's also possible (but **highly experimental**) to extract questions from the text of a GT program like this:

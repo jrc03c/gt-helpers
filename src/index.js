@@ -37,7 +37,7 @@ const liquid = new Liquid()
 
 const gt = {
 	date: {
-		toGTDateObject(date) {
+		toGTDateObject(date, indentation) {
 			const out = {
 				year: date.getFullYear(),
 				month: date.getMonth() + 1,
@@ -46,7 +46,7 @@ const gt = {
 				minute: date.getMinutes(),
 			}
 
-			return gt.object.toAssociation(out)
+			return gt.object.toAssociation(out, indentation)
 		},
 	},
 
@@ -109,17 +109,22 @@ const gt = {
 					}
 
 					if (isDate(x)) {
-						return helper(
-							{
-								year: x.getFullYear(),
-								month: x.getMonth() + 1,
-								day: x.getDate(),
-								hour: x.getHours(),
-								minute: x.getMinutes(),
-							},
-							indentation,
-							depth
-						)
+						let out = gt.date.toGTDateObject(x, indentation)
+
+						if (indentation) {
+							out = out
+								.split("\n")
+								.map((line, i) => {
+									if (i === 0) {
+										return prefix(indentation, depth - 1) + line
+									}
+
+									return prefix(indentation, depth) + line
+								})
+								.join("\n")
+						}
+
+						return out
 					}
 
 					if (isArray(x)) {

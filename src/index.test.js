@@ -277,10 +277,6 @@ test("tests that JS objects can be converted to GT associations", () => {
 		}	
 	`).trim()
 
-	const fs = require("fs")
-	fs.writeFileSync("bigPred.txt", bigPred, "utf8")
-	fs.writeFileSync("bigTrue.txt", bigTrue, "utf8")
-
 	expect(bigPred).toBe(bigTrue)
 })
 

@@ -54773,7 +54773,7 @@ ${codeFrame}` : message);
       var liquid = new Liquid();
       var gt2 = {
         date: {
-          toGTDateObject(date) {
+          toGTDateObject(date, indentation) {
             const out = {
               year: date.getFullYear(),
               month: date.getMonth() + 1,
@@ -54781,7 +54781,7 @@ ${codeFrame}` : message);
               hour: date.getHours(),
               minute: date.getMinutes()
             };
-            return gt2.object.toAssociation(out);
+            return gt2.object.toAssociation(out, indentation);
           }
         },
         object: {
@@ -54829,17 +54829,16 @@ ${codeFrame}` : message);
                   return '"null"';
                 }
                 if (isDate(x2)) {
-                  return helper(
-                    {
-                      year: x2.getFullYear(),
-                      month: x2.getMonth() + 1,
-                      day: x2.getDate(),
-                      hour: x2.getHours(),
-                      minute: x2.getMinutes()
-                    },
-                    indentation2,
-                    depth
-                  );
+                  let out = gt2.date.toGTDateObject(x2, indentation2);
+                  if (indentation2) {
+                    out = out.split("\n").map((line, i) => {
+                      if (i === 0) {
+                        return prefix(indentation2, depth - 1) + line;
+                      }
+                      return prefix(indentation2, depth) + line;
+                    }).join("\n");
+                  }
+                  return out;
                 }
                 if (isArray(x2)) {
                   if (x2.length === 0) {
