@@ -1,12 +1,13 @@
 {
 	"name": "gt-helpers",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "some tools to help parse and generate GuidedTrack programs",
 	"main": "src/index.js",
 	"scripts": {
 		"build": "node build.js",
 		"watch": "node build.js --watch",
-		"test": "jest"
+		"test": "jest",
+		"pub": "npm version patch --force && npm publish --access=public"
 	},
 	"repository": {
 		"type": "git",
