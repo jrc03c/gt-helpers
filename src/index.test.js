@@ -1,21 +1,52 @@
-const { DataFrame, isArray, isEqual } = require("@jrc03c/js-math-tools")
+const {
+	DataFrame,
+	isArray,
+	isEqual,
+	seed,
+	random,
+	round,
+} = require("@jrc03c/js-math-tools")
+
+const { unindent } = require("@jrc03c/js-text-tools")
 const gt = require(".")
+const makeKey = require("@jrc03c/make-key")
 
 test("tests that JS objects can be converted to GT associations", () => {
+	function double(x) {
+		return x * 2
+	}
+
 	const rights = [
-		[234, 234],
-		["foo", '"foo"'],
-		[true, '"true"'],
-		[false, '"false"'],
-		[null, '"null"'],
-		[undefined, '"undefined"'],
-		[[2, 3, 4], "[2,3,4]"],
 		[{ hello: "world" }, '{"hello"->"world"}'],
-		[() => {}, '"<function anonymous>"'],
+		[
+			{ a: { b: { c: { d: { e: [2, 3, 4] } } } } },
+			`{"a"->{"b"->{"c"->{"d"->{"e"->[2,3,4]}}}}}`,
+		],
 	]
 
 	rights.forEach(pair => {
 		expect(gt.object.toAssociation(pair[0])).toBe(pair[1])
+	})
+
+	const wrongs = [
+		"foo",
+		234,
+		false,
+		null,
+		true,
+		undefined,
+		-2.3,
+		-Infinity,
+		double,
+		Infinity,
+		NaN,
+		Symbol.for("Hello, world!"),
+		x => x,
+		[2, 3, 4],
+	]
+
+	wrongs.forEach(value => {
+		expect(() => gt.object.toAssociation(value)).toThrow()
 	})
 
 	class Person {
@@ -43,6 +74,214 @@ test("tests that JS objects can be converted to GT associations", () => {
 	const yTrue = `{"name"->"Alice","age"->23,"friends"->[{"name"->"Bob","age"->45,"friends"->[]},{"name"->"Charlize","age"->67,"friends"->[]}]}`
 	const yPred = gt.object.toAssociation(x)
 	expect(yPred).toBe(yTrue)
+
+	seed(12345)
+
+	const variables = [
+		0,
+		1,
+		2.3,
+		-2.3,
+		Infinity,
+		-Infinity,
+		NaN,
+		"foo",
+		true,
+		false,
+		null,
+		undefined,
+		Symbol.for("Hello, world!"),
+		x => x,
+		new Date(round(random() * 10e13)),
+		double,
+	]
+
+	const obj = {}
+	const frontier = [obj]
+
+	for (let i = 0; i < 100; i++) {
+		const endpoint = frontier[parseInt(random() * frontier.length)]
+
+		const value =
+			random() < 1 / 4
+				? []
+				: random() < 1 / 4
+				? {}
+				: variables[parseInt(random() * variables.length)]
+
+		if (endpoint instanceof Array) {
+			endpoint.push(value)
+		} else {
+			const key = makeKey(parseInt(random() * 5) + 1)
+			endpoint[key] = value
+		}
+
+		if (
+			typeof value === "object" &&
+			value !== null &&
+			!(value instanceof Date)
+		) {
+			frontier.push(value)
+		}
+	}
+
+	const bigPred = gt.object.toAssociation(obj, "	")
+
+	const bigTrue = unindent(`
+		{
+			"43" -> 2.3,
+			"dgg4" -> [
+				0,
+				"false",
+				0,
+				{
+					"2" -> [
+						"undefined"
+					],
+					"5" -> "x => x",
+					"49" -> [
+						[],
+						{},
+						1,
+						[]
+					],
+					"1d" -> "x => x",
+					"2e03" -> 1,
+					"e2b" -> [
+						-2.3,
+						"Infinity",
+						[],
+						2.3,
+						"x => x"
+					],
+					"d0e58" -> "x => x",
+					"fd0cc" -> {
+						"3897" -> "undefined",
+						"bf" -> {
+							"14" -> [
+								-2.3
+							],
+							"ab1" -> [],
+							"8fg" -> "x => x"
+						},
+						"aa9d" -> "undefined",
+						"c7" -> [
+							[
+								[
+									2.3,
+									[
+										[
+											"true"
+										],
+										[]
+									],
+									{}
+								]
+							],
+							[]
+						],
+						"a9gb" -> {
+							"1c9" -> [
+								"-Infinity"
+							],
+							"0568" -> "Symbol(Hello, world!)"
+						}
+					},
+					"1dfce" -> 0,
+					"7c" -> {
+						"0c6fc" -> {},
+						"d7f2d" -> {}
+					},
+					"f7dd" -> [
+						1
+					]
+				},
+				[
+					{
+						"9" -> "-Infinity",
+						"189f" -> {
+							"9" -> [],
+							"d6" -> {
+								"9deg1" -> "foo",
+								"d3f" -> [
+									{
+										"9" -> "foo",
+										"962" -> [],
+										"2g2bb" -> {},
+										"4b8ce" -> "Symbol(Hello, world!)",
+										"e777" -> 0
+									},
+									2.3
+								]
+							},
+							"9a1" -> [
+								{}
+							]
+						},
+						"f1" -> {
+							"7c4" -> {
+								"a" -> 0
+							}
+						}
+					},
+					{
+						"5" -> 1,
+						"62859" -> {},
+						"begd" -> {
+							"year" -> 2365,
+							"month" -> 2,
+							"day" -> 16,
+							"hour" -> 17,
+							"minute" -> 47
+						}
+					},
+					[],
+					{},
+					"true",
+					[
+						2.3
+					]
+				],
+				"function double(x) {\\n    return x * 2;\\n  }",
+				{
+					"55da" -> [
+						[
+							"NaN",
+							"null",
+							"true",
+							[]
+						],
+						"false",
+						"NaN"
+					],
+					"87b8" -> [
+						{
+							"4f" -> "foo",
+							"ad" -> "x => x"
+						}
+					]
+				},
+				[]
+			],
+			"73aa2" -> "NaN",
+			"eff" -> "x => x",
+			"f95" -> "function double(x) {\\n    return x * 2;\\n  }",
+			"d8g3" -> {
+				"year" -> 2365,
+				"month" -> 2,
+				"day" -> 16,
+				"hour" -> 17,
+				"minute" -> 47
+			},
+			"6ea" -> 1
+		}	
+	`).trim()
+
+	const fs = require("fs")
+	fs.writeFileSync("bigPred.txt", bigPred, "utf8")
+	fs.writeFileSync("bigTrue.txt", bigTrue, "utf8")
+
+	expect(bigPred).toBe(bigTrue)
 })
 
 test("tests that questions can be successfully extracted from a GT program string", () => {
@@ -413,9 +652,9 @@ test("tests that questions can be successfully extracted from a GT program strin
 
 test("tests that errors are thrown in a program's indentation includes spaces", () => {
 	const badProgram =
-		"*question: What's your name?\n  *type: text\n  *save: theirName"
+		"*question: What's your name?\n *type: text\n *save: theirName"
 	const worseProgram =
-		"*question: What's your name?\n\t  \t \t *type: text\n \t   \t  \t*save: theirName"
+		"*question: What's your name?\n\t	\t \t *type: text\n \t	 \t	\t*save: theirName"
 	const okayProgram =
 		"*question: What's your name?\n\t\t\t*type: text\n\t\t\t*save: theirName"
 

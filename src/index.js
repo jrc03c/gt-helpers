@@ -1,6 +1,11 @@
 const {
+	assert,
 	DataFrame,
+	decycle,
 	isArray,
+	isDate,
+	isObject,
+	isString,
 	isUndefined,
 	range,
 	Series,
@@ -46,55 +51,100 @@ const gt = {
 	},
 
 	object: {
-		toAssociation(obj, indentation) {
-			function helper(obj, depth) {
-				const newline = indentation ? "\n" : ""
+		toAssociation(x, indentation) {
+			assert(
+				isObject(x),
+				"The first argument passed into the `toAssociation` function must be a JS object!"
+			)
+
+			assert(
+				isString(indentation) || isUndefined(indentation),
+				"The second parameter to the `toAssociation` function must be undefined or a string!"
+			)
+
+			const newline = indentation ? "\n" : ""
+
+			function helper(x, indentation, depth) {
 				depth = depth || 0
-				const type = typeof obj
 
-				if (type === "string") return stringify(obj)
-				if (type === "number") return obj
-				if (type === "boolean") return stringify(obj.toString())
-
-				if (type === "function") {
-					return stringify(
-						`<function ${
-							obj.name.trim().length === 0 ? "anonymous" : obj.name
-						}>`
-					)
-				}
-
-				if (type === "undefined") return stringify("undefined")
-				if (obj === null) return stringify("null")
-
-				if (obj instanceof Array) {
-					if (obj.length === 0) {
-						return prefix(indentation, depth - 1) + "[]"
+				if (typeof x === "number" || typeof x === "bigint") {
+					if (x === Infinity) {
+						return '"Infinity"'
 					}
 
-					return (
-						prefix(indentation, depth - 1) +
-						"[" +
-						newline +
-						obj
-							.map(v => {
-								let child = helper(v, depth + 1)
+					if (x === -Infinity) {
+						return '"-Infinity"'
+					}
 
-								if (typeof child === "string") {
-									child = child.trim()
-								}
+					if (isNaN(x)) {
+						return '"NaN"'
+					}
 
-								return prefix(indentation, depth + 1) + child
-							})
-							.join("," + newline) +
-						prefix(indentation, depth) +
-						newline +
-						"]"
-					)
-				} else {
-					const keys = Object.keys(obj)
+					return x.toString()
+				}
 
-					if (keys.length === 0) {
+				if (typeof x === "string") {
+					return stringify(x)
+				}
+
+				if (typeof x === "boolean") {
+					return stringify(stringify(x))
+				}
+
+				if (typeof x === "undefined") {
+					return '"undefined"'
+				}
+
+				if (typeof x === "symbol") {
+					return stringify(stringify(x))
+				}
+
+				if (typeof x === "function") {
+					return JSON.stringify(x.toString()).trim()
+				}
+
+				if (typeof x === "object") {
+					if (x === null) {
+						return '"null"'
+					}
+
+					if (isDate(x)) {
+						return helper(
+							{
+								year: x.getFullYear(),
+								month: x.getMonth() + 1,
+								day: x.getDate(),
+								hour: x.getHours(),
+								minute: x.getMinutes(),
+							},
+							indentation,
+							depth
+						)
+					}
+
+					if (isArray(x)) {
+						if (x.length === 0) {
+							return prefix(indentation, depth - 1) + "[]"
+						}
+
+						return (
+							prefix(indentation, depth - 1) +
+							"[" +
+							newline +
+							x
+								.map(v => {
+									let child = helper(v, indentation, depth + 1)
+									if (isString(child)) child = child.trim()
+									return prefix(indentation, depth + 1) + child
+								})
+								.join("," + newline) +
+							newline +
+							prefix(indentation, depth) +
+							"]"
+						)
+					}
+
+					if (Object.keys(x).length === 0) {
 						return prefix(indentation, depth - 1) + "{}"
 					}
 
@@ -102,17 +152,14 @@ const gt = {
 						prefix(indentation, depth - 1) +
 						"{" +
 						newline +
-						keys
+						Object.keys(x)
 							.map(key => {
-								let child = helper(obj[key], depth + 1)
-
-								if (typeof child === "string") {
-									child = child.trim()
-								}
+								let child = helper(x[key], indentation, depth + 1)
+								if (isString(child)) child = child.trim()
 
 								return (
 									prefix(indentation, depth + 1) +
-									stringify(key) +
+									JSON.stringify(key) +
 									(indentation ? " " : "") +
 									"->" +
 									(indentation ? " " : "") +
@@ -120,14 +167,16 @@ const gt = {
 								)
 							})
 							.join("," + newline) +
-						prefix(indentation, depth) +
 						newline +
+						prefix(indentation, depth) +
 						"}"
 					)
 				}
+
+				return '"undefined"'
 			}
 
-			return helper(obj)
+			return helper(decycle(x), indentation)
 		},
 	},
 
@@ -169,12 +218,11 @@ const gt = {
 			const questions = []
 
 			lines.forEach((line, i) => {
-				// make sure that the line's indentation doesn't include tabs
-				const pattern = /^\s* \s*[^\s]/g
+				// make sure that the line's indentation doesn't include spaces
 
-				if (line.match(pattern)) {
+				if (line.split(/[^\s]/g)[0].includes(" ")) {
 					throw new Error(
-						`GT programs must be indented with spaces only! The indentation of line ${
+						`GT programs must be indented with tabs only! The indentation of line ${
 							i + 1
 						} in your program includes spaces!`
 					)

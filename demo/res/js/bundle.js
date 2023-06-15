@@ -36582,37 +36582,38 @@ ${codeFrame}` : message);
       var isDataFrame = require_is_dataframe();
       var isSeries = require_is_series();
       function copy(x) {
-        try {
-          const out = structuredClone(x);
-          return out;
-        } catch (e) {
-          if (typeof x === "object") {
-            if (x === null) {
+        function helper(x2) {
+          if (typeof x2 === "object") {
+            if (x2 === null) {
               return null;
             }
-            if (isArray(x)) {
-              return x.map((v) => copy(v));
+            if (isArray(x2)) {
+              return x2.map((v) => copy(v));
             }
-            if (isSeries(x)) {
-              const out2 = x.copy();
+            if (isSeries(x2)) {
+              const out2 = x2.copy();
               out2.values = copy(out2.values);
               return out2;
             }
-            if (isDataFrame(x)) {
-              const out2 = x.copy();
-              out2.values = copy(x.values);
+            if (isDataFrame(x2)) {
+              const out2 = x2.copy();
+              out2.values = copy(x2.values);
               return out2;
             }
-            x = decycle(x);
+            if (x2 instanceof Date) {
+              return new Date(x2.getTime());
+            }
+            x2 = decycle(x2);
             const out = {};
-            Object.keys(x).forEach((key) => {
-              out[key] = copy(x[key]);
+            Object.keys(x2).forEach((key) => {
+              out[key] = copy(x2[key]);
             });
             return out;
           } else {
-            return x;
+            return x2;
           }
         }
+        return helper(decycle(x));
       }
       function decycle(x) {
         function helper(x2, checked, currentPath) {
@@ -36649,7 +36650,13 @@ ${codeFrame}` : message);
             return x2;
           }
         }
-        const orig = copy(x);
+        const orig = (() => {
+          try {
+            return structuredClone(x);
+          } catch (e) {
+            return x;
+          }
+        })();
         let out = helper(orig);
         if (isDataFrame(x)) {
           const temp = x.copy();
@@ -36674,7 +36681,6 @@ ${codeFrame}` : message);
   // node_modules/@jrc03c/js-csv-helpers/node_modules/@jrc03c/js-math-tools/src/flatten.js
   var require_flatten = __commonJS({
     "node_modules/@jrc03c/js-csv-helpers/node_modules/@jrc03c/js-math-tools/src/flatten.js"(exports, module) {
-      var { copy } = require_copy();
       var assert = require_assert();
       var isArray = require_is_array();
       var isDataFrame = require_is_dataframe();
@@ -36689,7 +36695,7 @@ ${codeFrame}` : message);
         );
         function helper(arr2) {
           let out = [];
-          copy(arr2).forEach((child) => {
+          arr2.forEach((child) => {
             if (isArray(child)) {
               out = out.concat(helper(child));
             } else {
@@ -36704,10 +36710,22 @@ ${codeFrame}` : message);
     }
   });
 
+  // node_modules/@jrc03c/js-csv-helpers/node_modules/@jrc03c/js-math-tools/src/is-date.js
+  var require_is_date = __commonJS({
+    "node_modules/@jrc03c/js-csv-helpers/node_modules/@jrc03c/js-math-tools/src/is-date.js"(exports, module) {
+      function isDate(x) {
+        return x instanceof Date && x.toString() !== "Invalid Date";
+      }
+      module.exports = isDate;
+    }
+  });
+
   // node_modules/@jrc03c/js-csv-helpers/node_modules/@jrc03c/js-math-tools/src/is-equal.js
   var require_is_equal = __commonJS({
     "node_modules/@jrc03c/js-csv-helpers/node_modules/@jrc03c/js-math-tools/src/is-equal.js"(exports, module) {
       var { decycle } = require_copy();
+      var isArray = require_is_array();
+      var isDate = require_is_date();
       function isEqual(a, b) {
         function helper(a2, b2) {
           const aType = typeof a2;
@@ -36734,6 +36752,12 @@ ${codeFrame}` : message);
             if (a2 === null || b2 === null) {
               return a2 === null && b2 === null;
             } else {
+              if (isDate(a2) && isDate(b2)) {
+                return a2.getTime() === b2.getTime();
+              }
+              if (isArray(a2) !== isArray(b2)) {
+                return false;
+              }
               const aKeys = Object.keys(a2);
               const bKeys = Object.keys(b2);
               if (aKeys.length !== bKeys.length)
@@ -36748,9 +36772,6 @@ ${codeFrame}` : message);
           }
         }
         try {
-          if (a instanceof Date && b instanceof Date) {
-            return a.getTime() === b.getTime();
-          }
           return helper(a, b);
         } catch (e) {
           return helper(decycle(a), decycle(b));
@@ -40091,6 +40112,7 @@ ${codeFrame}` : message);
       var isArray = require_is_array();
       var isBoolean = require_is_boolean();
       var isDataFrame = require_is_dataframe();
+      var isDate = require_is_date();
       var isEqual = require_is_equal();
       var isNumber = require_is_number();
       var isObject = require_is_object();
@@ -40118,7 +40140,7 @@ ${codeFrame}` : message);
             JSON.parse(value);
           } catch (e) {
             const dateValue = cast(value, "date");
-            if (dateValue instanceof Date) {
+            if (isDate(dateValue)) {
               return dateValue.getTime();
             }
           }
@@ -40154,7 +40176,7 @@ ${codeFrame}` : message);
           }
         }
         if (type === "date") {
-          if (value instanceof Date) {
+          if (isDate(value)) {
             return value;
           }
           if (isUndefined(value)) {
@@ -40163,7 +40185,7 @@ ${codeFrame}` : message);
           const valueFloat = parseFloat(value);
           if (!isNaN(valueFloat)) {
             const out = new Date(value);
-            if (out.toString() === "Invalid Date")
+            if (!isDate(out))
               return null;
             return out;
           }
@@ -41302,28 +41324,41 @@ ${codeFrame}` : message);
       var flatten = require_flatten();
       var isArray = require_is_array();
       var isDataFrame = require_is_dataframe();
+      var isDate = require_is_date();
       var isNumber = require_is_number();
       var isSeries = require_is_series();
       var isString = require_is_string();
       var nullValues = require_null_values();
+      function checkIfInteger(results) {
+        if (results.type === "number") {
+          if (typeof results.value !== "undefined") {
+            results.isInteger = parseInt(results.value) === results.value;
+          } else {
+            results.isInteger = flatten(results.values).every(
+              (v) => isNumber(v) ? parseInt(v) === v : true
+            );
+          }
+        }
+        return results;
+      }
       function inferType(arr) {
         if (isDataFrame(arr)) {
           const out = arr.copy();
           const results = inferType(arr.values);
           out.values = results.values;
-          return { type: results.type, values: out };
+          return checkIfInteger({ type: results.type, values: out });
         }
         if (isSeries(arr)) {
           const out = arr.copy();
           const results = inferType(arr.values);
           out.values = results.values;
-          return { type: results.type, values: out };
+          return checkIfInteger({ type: results.type, values: out });
         }
         if (!isArray(arr)) {
           const out = inferType([arr]);
           out.value = out.values[0];
           delete out.values;
-          return out;
+          return checkIfInteger(out);
         }
         assert(
           isArray(arr),
@@ -41334,8 +41369,8 @@ ${codeFrame}` : message);
             return "null";
           try {
             if (typeof v === "object") {
-              const temp = new Date(v.toString());
-              if (temp instanceof Date && temp.toString() !== "Invalid Date") {
+              const temp = new Date(v.getTime());
+              if (isDate(temp)) {
                 return "date";
               }
             }
@@ -41365,7 +41400,7 @@ ${codeFrame}` : message);
             return "string";
           } catch (e) {
             const vDate = new Date(v);
-            if (vDate.toString() !== "Invalid Date") {
+            if (isDate(vDate)) {
               return "date";
             }
             return "string";
@@ -41373,7 +41408,10 @@ ${codeFrame}` : message);
         });
         const counts = count(types).sort((a, b) => b.count - a.count);
         const primaryType = counts[0].value;
-        return { type: primaryType, values: apply(arr, (v) => cast(v, primaryType)) };
+        return checkIfInteger({
+          type: primaryType,
+          values: apply(arr, (v) => cast(v, primaryType))
+        });
       }
       module.exports = inferType;
     }
@@ -43135,37 +43173,38 @@ ${codeFrame}` : message);
       var isDataFrame = require_is_dataframe2();
       var isSeries = require_is_series2();
       function copy(x) {
-        try {
-          const out = structuredClone(x);
-          return out;
-        } catch (e) {
-          if (typeof x === "object") {
-            if (x === null) {
+        function helper(x2) {
+          if (typeof x2 === "object") {
+            if (x2 === null) {
               return null;
             }
-            if (isArray(x)) {
-              return x.map((v) => copy(v));
+            if (isArray(x2)) {
+              return x2.map((v) => copy(v));
             }
-            if (isSeries(x)) {
-              const out2 = x.copy();
+            if (isSeries(x2)) {
+              const out2 = x2.copy();
               out2.values = copy(out2.values);
               return out2;
             }
-            if (isDataFrame(x)) {
-              const out2 = x.copy();
-              out2.values = copy(x.values);
+            if (isDataFrame(x2)) {
+              const out2 = x2.copy();
+              out2.values = copy(x2.values);
               return out2;
             }
-            x = decycle(x);
+            if (x2 instanceof Date) {
+              return new Date(x2.getTime());
+            }
+            x2 = decycle(x2);
             const out = {};
-            Object.keys(x).forEach((key) => {
-              out[key] = copy(x[key]);
+            Object.keys(x2).forEach((key) => {
+              out[key] = copy(x2[key]);
             });
             return out;
           } else {
-            return x;
+            return x2;
           }
         }
+        return helper(decycle(x));
       }
       function decycle(x) {
         function helper(x2, checked, currentPath) {
@@ -43202,7 +43241,13 @@ ${codeFrame}` : message);
             return x2;
           }
         }
-        const orig = copy(x);
+        const orig = (() => {
+          try {
+            return structuredClone(x);
+          } catch (e) {
+            return x;
+          }
+        })();
         let out = helper(orig);
         if (isDataFrame(x)) {
           const temp = x.copy();
@@ -43227,7 +43272,6 @@ ${codeFrame}` : message);
   // node_modules/@jrc03c/js-math-tools/src/flatten.js
   var require_flatten2 = __commonJS({
     "node_modules/@jrc03c/js-math-tools/src/flatten.js"(exports, module) {
-      var { copy } = require_copy2();
       var assert = require_assert2();
       var isArray = require_is_array2();
       var isDataFrame = require_is_dataframe2();
@@ -43242,7 +43286,7 @@ ${codeFrame}` : message);
         );
         function helper(arr2) {
           let out = [];
-          copy(arr2).forEach((child) => {
+          arr2.forEach((child) => {
             if (isArray(child)) {
               out = out.concat(helper(child));
             } else {
@@ -43257,11 +43301,22 @@ ${codeFrame}` : message);
     }
   });
 
+  // node_modules/@jrc03c/js-math-tools/src/is-date.js
+  var require_is_date2 = __commonJS({
+    "node_modules/@jrc03c/js-math-tools/src/is-date.js"(exports, module) {
+      function isDate(x) {
+        return x instanceof Date && x.toString() !== "Invalid Date";
+      }
+      module.exports = isDate;
+    }
+  });
+
   // node_modules/@jrc03c/js-math-tools/src/is-equal.js
   var require_is_equal2 = __commonJS({
     "node_modules/@jrc03c/js-math-tools/src/is-equal.js"(exports, module) {
       var { decycle } = require_copy2();
       var isArray = require_is_array2();
+      var isDate = require_is_date2();
       function isEqual(a, b) {
         function helper(a2, b2) {
           const aType = typeof a2;
@@ -43288,6 +43343,9 @@ ${codeFrame}` : message);
             if (a2 === null || b2 === null) {
               return a2 === null && b2 === null;
             } else {
+              if (isDate(a2) && isDate(b2)) {
+                return a2.getTime() === b2.getTime();
+              }
               if (isArray(a2) !== isArray(b2)) {
                 return false;
               }
@@ -43305,9 +43363,6 @@ ${codeFrame}` : message);
           }
         }
         try {
-          if (a instanceof Date && b instanceof Date) {
-            return a.getTime() === b.getTime();
-          }
           return helper(a, b);
         } catch (e) {
           return helper(decycle(a), decycle(b));
@@ -46648,6 +46703,7 @@ ${codeFrame}` : message);
       var isArray = require_is_array2();
       var isBoolean = require_is_boolean2();
       var isDataFrame = require_is_dataframe2();
+      var isDate = require_is_date2();
       var isEqual = require_is_equal2();
       var isNumber = require_is_number2();
       var isObject = require_is_object2();
@@ -46675,7 +46731,7 @@ ${codeFrame}` : message);
             JSON.parse(value);
           } catch (e) {
             const dateValue = cast(value, "date");
-            if (dateValue instanceof Date) {
+            if (isDate(dateValue)) {
               return dateValue.getTime();
             }
           }
@@ -46711,7 +46767,7 @@ ${codeFrame}` : message);
           }
         }
         if (type === "date") {
-          if (value instanceof Date) {
+          if (isDate(value)) {
             return value;
           }
           if (isUndefined(value)) {
@@ -46720,7 +46776,7 @@ ${codeFrame}` : message);
           const valueFloat = parseFloat(value);
           if (!isNaN(valueFloat)) {
             const out = new Date(value);
-            if (out.toString() === "Invalid Date")
+            if (!isDate(out))
               return null;
             return out;
           }
@@ -47859,6 +47915,7 @@ ${codeFrame}` : message);
       var flatten = require_flatten2();
       var isArray = require_is_array2();
       var isDataFrame = require_is_dataframe2();
+      var isDate = require_is_date2();
       var isNumber = require_is_number2();
       var isSeries = require_is_series2();
       var isString = require_is_string2();
@@ -47903,8 +47960,8 @@ ${codeFrame}` : message);
             return "null";
           try {
             if (typeof v === "object") {
-              const temp = new Date(v.toString());
-              if (temp instanceof Date && temp.toString() !== "Invalid Date") {
+              const temp = new Date(v.getTime());
+              if (isDate(temp)) {
                 return "date";
               }
             }
@@ -47934,7 +47991,7 @@ ${codeFrame}` : message);
             return "string";
           } catch (e) {
             const vDate = new Date(v);
-            if (vDate.toString() !== "Invalid Date") {
+            if (isDate(vDate)) {
               return "date";
             }
             return "string";
@@ -48628,6 +48685,7 @@ ${codeFrame}` : message);
         isBoolean: require_is_boolean2(),
         isBrowser: require_is_browser2(),
         isDataFrame: require_is_dataframe2(),
+        isDate: require_is_date2(),
         isEqual: require_is_equal2(),
         isFunction: require_is_function2(),
         isJagged: require_is_jagged2(),
@@ -54408,6 +54466,13 @@ ${codeFrame}` : message);
     }
   });
 
+  // node_modules/@jrc03c/js-text-tools/src/helpers/punctuation.js
+  var require_punctuation = __commonJS({
+    "node_modules/@jrc03c/js-text-tools/src/helpers/punctuation.js"(exports, module) {
+      module.exports = "!\"#%&'()*+,-./:;<=>?@[]^_`{|}~\xA0\xA1\xA4\xA7\xA9\xAA\xAB\xAE\xB0\xB1\xB6\xB7\xBA\xBB\xBF\xD7\xF7\u0254\u0300\u0301\u0302\u0303\u037E\u0387\u055A\u055B\u055C\u055D\u055E\u055F\u0589\u058A\u05BE\u05C0\u05C3\u05C6\u05F3\u05F4\u0609\u060A\u060C\u060D\u061B\u061E\u061F\u066A\u066B\u066C\u066D\u06D4\u0700\u0701\u0702\u0703\u0704\u0705\u0706\u0707\u0708\u0709\u070A\u070B\u070C\u070D\u07F7\u07F8\u07F9\u0830\u0831\u0832\u0833\u0834\u0835\u0836\u0837\u0838\u0839\u083A\u083B\u083C\u083D\u083E\u085E\u0964\u0965\u0970\u09FD\u0A76\u0AF0\u0C77\u0C84\u0DF4\u0E4F\u0E5A\u0E5B\u0F04\u0F05\u0F06\u0F07\u0F08\u0F09\u0F0A\u0F0B\u0F0C\u0F0D\u0F0E\u0F0F\u0F10\u0F11\u0F12\u0F14\u0F3A\u0F3B\u0F3C\u0F3D\u0F85\u0FD0\u0FD1\u0FD2\u0FD3\u0FD4\u0FD9\u0FDA\u104A\u104B\u104C\u104D\u104E\u104F\u10FB\u1360\u1361\u1362\u1363\u1364\u1365\u1366\u1367\u1368\u1400\u166E\u169B\u169C\u16EB\u16EC\u16ED\u1735\u1736\u17D4\u17D5\u17D6\u17D8\u17D9\u17DA\u1800\u1801\u1802\u1803\u1804\u1805\u1806\u1807\u1808\u1809\u180A\u1944\u1945\u1A1E\u1A1F\u1AA0\u1AA1\u1AA2\u1AA3\u1AA4\u1AA5\u1AA6\u1AA8\u1AA9\u1AAA\u1AAB\u1AAC\u1AAD\u1B5A\u1B5B\u1B5C\u1B5D\u1B5E\u1B5F\u1B60\u1BFC\u1BFD\u1BFE\u1BFF\u1C3B\u1C3C\u1C3D\u1C3E\u1C3F\u1C7E\u1C7F\u1CC0\u1CC1\u1CC2\u1CC3\u1CC4\u1CC5\u1CC6\u1CC7\u1CD3\u2010\u2011\u2012\u2013\u2014\u2015\u2016\u2017\u2018\u2019\u201A\u201B\u201C\u201D\u201E\u201F\u2020\u2021\u2022\u2023\u2024\u2025\u2026\u2027\u2030\u2031\u2032\u2033\u2034\u2035\u2036\u2037\u2038\u2039\u203A\u203B\u203C\u203D\u203E\u203F\u2040\u2041\u2042\u2043\u2045\u2046\u2047\u2048\u2049\u204A\u204B\u204C\u204D\u204E\u204F\u2050\u2051\u2052\u2053\u2054\u2055\u2056\u2057\u2058\u2059\u205A\u205B\u205C\u205D\u205E\u207D\u207E\u208D\u208E\u2116\u2117\u2120\u2122\u212E\u2212\u2234\u2235\u2248\u2300\u2308\u2309\u230A\u230B\u2311\u2329\u232A\u2380\u25CA\u25CC\u261E\u2640\u2642\u26A5\u2766\u2767\u2768\u2769\u276A\u276B\u276C\u276D\u276E\u276F\u2770\u2771\u2772\u2773\u2774\u2775\u27C5\u27C6\u27E6\u27E7\u27E8\u27E9\u27EA\u27EB\u27EC\u27ED\u27EE\u27EF\u2983\u2984\u2985\u2986\u2987\u2988\u2989\u298A\u298B\u298C\u298D\u298E\u298F\u2990\u2991\u2992\u2993\u2994\u2995\u2996\u2997\u2998\u29D8\u29D9\u29DA\u29DB\u29FC\u29FD\u2CF9\u2CFA\u2CFB\u2CFC\u2CFE\u2CFF\u2D70\u2E00\u2E01\u2E02\u2E03\u2E04\u2E05\u2E06\u2E07\u2E08\u2E09\u2E0A\u2E0B\u2E0C\u2E0D\u2E0E\u2E0F\u2E10\u2E11\u2E12\u2E13\u2E14\u2E15\u2E16\u2E17\u2E18\u2E19\u2E1A\u2E1B\u2E1C\u2E1D\u2E1E\u2E1F\u2E20\u2E21\u2E22\u2E23\u2E24\u2E25\u2E26\u2E27\u2E28\u2E29\u2E2A\u2E2B\u2E2C\u2E2D\u2E2E\u2E30\u2E31\u2E32\u2E33\u2E34\u2E35\u2E36\u2E37\u2E38\u2E39\u2E3A\u2E3B\u2E3C\u2E3D\u2E3E\u2E3F\u2E40\u2E41\u2E42\u2E43\u2E44\u2E45\u2E46\u2E47\u2E48\u2E49\u2E4A\u2E4B\u2E4C\u2E4D\u2E4E\u2E4F\u2E52\u3001\u3002\u3003\u3008\u3009\u300A\u300B\u300C\u300D\u300E\u300F\u3010\u3011\u3014\u3015\u3016\u3017\u3018\u3019\u301A\u301B\u301C\u301D\u301E\u301F\u3030\u303D\u30A0\u30FB\uA4FE\uA4FF\uA60D\uA60E\uA60F\uA673\uA67E\uA6F2\uA6F3\uA6F4\uA6F5\uA6F6\uA6F7\uA874\uA875\uA876\uA877\uA8CE\uA8CF\uA8F8\uA8F9\uA8FA\uA8FC\uA92E\uA92F\uA95F\uA9C1\uA9C2\uA9C3\uA9C4\uA9C5\uA9C6\uA9C7\uA9C8\uA9C9\uA9CA\uA9CB\uA9CC\uA9CD\uA9DE\uA9DF\uAA5C\uAA5D\uAA5E\uAA5F\uAADE\uAADF\uAAF0\uAAF1\uABEB\uD800\uD801\uD802\uD803\uD804\uD805\uD806\uD807\uD809\uD81A\uD81B\uD82F\uD836\uD83A\u{1F03B}\uDC41\uDC42\uDC43\uDC44\uDC45\uDC47\uDC48\uDC49\uDC4A\uDC4B\uDC4C\uDC4D\uDC4E\uDC4F\uDC57\uDC5A\uDC5B\uDC5D\uDC70\uDC71\uDC72\uDC73\uDC74\uDC9F\uDCBB\uDCBC\uDCBE\uDCBF\uDCC0\uDCC1\uDCC6\uDD00\uDD01\uDD02\uDD1F\uDD2F\uDD3F\uDD40\uDD41\uDD42\uDD43\uDD44\uDD45\uDD46\uDD5E\uDD5F\uDD6F\uDD74\uDD75\uDDC1\uDDC2\uDDC3\uDDC4\uDDC5\uDDC6\uDDC7\uDDC8\uDDC9\uDDCA\uDDCB\uDDCC\uDDCD\uDDCE\uDDCF\uDDD0\uDDD1\uDDD2\uDDD3\uDDD4\uDDD5\uDDD6\uDDD7\uDDDB\uDDDD\uDDDE\uDDDF\uDDE2\uDE38\uDE39\uDE3A\uDE3B\uDE3C\uDE3D\uDE3F\uDE40\uDE41\uDE42\uDE43\uDE44\uDE45\uDE46\uDE50\uDE51\uDE52\uDE53\uDE54\uDE55\uDE56\uDE57\uDE58\uDE60\uDE61\uDE62\uDE63\uDE64\uDE65\uDE66\uDE67\uDE68\uDE69\uDE6A\uDE6B\uDE6C\uDE6E\uDE6F\uDE7F\uDE87\uDE88\uDE89\uDE8A\uDE8B\uDE97\uDE98\uDE99\uDE9A\uDE9B\uDE9C\uDE9E\uDE9F\uDEA0\uDEA1\uDEA2\uDEA9\uDEAD\uDEF0\uDEF1\uDEF2\uDEF3\uDEF4\uDEF5\uDEF6\uDEF7\uDEF8\uDF37\uDF38\uDF39\uDF3A\uDF3B\uDF3C\uDF3D\uDF3E\uDF3F\uDF44\uDF55\uDF56\uDF57\uDF58\uDF59\uDF99\uDF9A\uDF9B\uDF9C\uDF9F\uDFD0\uDFE2\uDFFF\uFD3F\uFE10\uFE11\uFE12\uFE13\uFE14\uFE15\uFE16\uFE17\uFE18\uFE19\uFE30\uFE31\uFE32\uFE33\uFE34\uFE35\uFE36\uFE37\uFE38\uFE39\uFE3A\uFE3B\uFE3C\uFE3D\uFE3E\uFE3F\uFE40\uFE41\uFE42\uFE43\uFE44\uFE45\uFE46\uFE47\uFE48\uFE49\uFE4A\uFE4B\uFE4C\uFE4D\uFE4E\uFE4F\uFE50\uFE51\uFE52\uFE54\uFE55\uFE56\uFE57\uFE58\uFE59\uFE5A\uFE5B\uFE5C\uFE5D\uFE5E\uFE5F\uFE60\uFE61\uFE63\uFE68\uFE6A\uFE6B\uFF01\uFF02\uFF03\uFF05\uFF06\uFF07\uFF08\uFF09\uFF0A\uFF0C\uFF0D\uFF0E\uFF0F\uFF1A\uFF1B\uFF1F\uFF20\uFF3B\uFF3C\uFF3D\uFF3F\uFF5B\uFF5D\uFF5F\uFF60\uFF61\uFF62\uFF63\uFF64\uFF65";
+    }
+  });
+
   // node_modules/@jrc03c/js-text-tools/src/helpers/replace-all.js
   var require_replace_all = __commonJS({
     "node_modules/@jrc03c/js-text-tools/src/helpers/replace-all.js"(exports, module) {
@@ -54427,18 +54492,11 @@ ${codeFrame}` : message);
     }
   });
 
-  // node_modules/@jrc03c/js-text-tools/src/helpers/punctuation.js
-  var require_punctuation = __commonJS({
-    "node_modules/@jrc03c/js-text-tools/src/helpers/punctuation.js"(exports, module) {
-      module.exports = "!\"#%&'()*+,-./:;<=>?@[]^_`{|}~\xA0\xA1\xA4\xA7\xA9\xAA\xAB\xAE\xB0\xB1\xB6\xB7\xBA\xBB\xBF\xD7\xF7\u0254\u0300\u0301\u0302\u0303\u037E\u0387\u055A\u055B\u055C\u055D\u055E\u055F\u0589\u058A\u05BE\u05C0\u05C3\u05C6\u05F3\u05F4\u0609\u060A\u060C\u060D\u061B\u061E\u061F\u066A\u066B\u066C\u066D\u06D4\u0700\u0701\u0702\u0703\u0704\u0705\u0706\u0707\u0708\u0709\u070A\u070B\u070C\u070D\u07F7\u07F8\u07F9\u0830\u0831\u0832\u0833\u0834\u0835\u0836\u0837\u0838\u0839\u083A\u083B\u083C\u083D\u083E\u085E\u0964\u0965\u0970\u09FD\u0A76\u0AF0\u0C77\u0C84\u0DF4\u0E4F\u0E5A\u0E5B\u0F04\u0F05\u0F06\u0F07\u0F08\u0F09\u0F0A\u0F0B\u0F0C\u0F0D\u0F0E\u0F0F\u0F10\u0F11\u0F12\u0F14\u0F3A\u0F3B\u0F3C\u0F3D\u0F85\u0FD0\u0FD1\u0FD2\u0FD3\u0FD4\u0FD9\u0FDA\u104A\u104B\u104C\u104D\u104E\u104F\u10FB\u1360\u1361\u1362\u1363\u1364\u1365\u1366\u1367\u1368\u1400\u166E\u169B\u169C\u16EB\u16EC\u16ED\u1735\u1736\u17D4\u17D5\u17D6\u17D8\u17D9\u17DA\u1800\u1801\u1802\u1803\u1804\u1805\u1806\u1807\u1808\u1809\u180A\u1944\u1945\u1A1E\u1A1F\u1AA0\u1AA1\u1AA2\u1AA3\u1AA4\u1AA5\u1AA6\u1AA8\u1AA9\u1AAA\u1AAB\u1AAC\u1AAD\u1B5A\u1B5B\u1B5C\u1B5D\u1B5E\u1B5F\u1B60\u1BFC\u1BFD\u1BFE\u1BFF\u1C3B\u1C3C\u1C3D\u1C3E\u1C3F\u1C7E\u1C7F\u1CC0\u1CC1\u1CC2\u1CC3\u1CC4\u1CC5\u1CC6\u1CC7\u1CD3\u2010\u2011\u2012\u2013\u2014\u2015\u2016\u2017\u2018\u2019\u201A\u201B\u201C\u201D\u201E\u201F\u2020\u2021\u2022\u2023\u2024\u2025\u2026\u2027\u2030\u2031\u2032\u2033\u2034\u2035\u2036\u2037\u2038\u2039\u203A\u203B\u203C\u203D\u203E\u203F\u2040\u2041\u2042\u2043\u2045\u2046\u2047\u2048\u2049\u204A\u204B\u204C\u204D\u204E\u204F\u2050\u2051\u2052\u2053\u2054\u2055\u2056\u2057\u2058\u2059\u205A\u205B\u205C\u205D\u205E\u207D\u207E\u208D\u208E\u2116\u2117\u2120\u2122\u212E\u2212\u2234\u2235\u2248\u2300\u2308\u2309\u230A\u230B\u2311\u2329\u232A\u2380\u25CA\u25CC\u261E\u2640\u2642\u26A5\u2766\u2767\u2768\u2769\u276A\u276B\u276C\u276D\u276E\u276F\u2770\u2771\u2772\u2773\u2774\u2775\u27C5\u27C6\u27E6\u27E7\u27E8\u27E9\u27EA\u27EB\u27EC\u27ED\u27EE\u27EF\u2983\u2984\u2985\u2986\u2987\u2988\u2989\u298A\u298B\u298C\u298D\u298E\u298F\u2990\u2991\u2992\u2993\u2994\u2995\u2996\u2997\u2998\u29D8\u29D9\u29DA\u29DB\u29FC\u29FD\u2CF9\u2CFA\u2CFB\u2CFC\u2CFE\u2CFF\u2D70\u2E00\u2E01\u2E02\u2E03\u2E04\u2E05\u2E06\u2E07\u2E08\u2E09\u2E0A\u2E0B\u2E0C\u2E0D\u2E0E\u2E0F\u2E10\u2E11\u2E12\u2E13\u2E14\u2E15\u2E16\u2E17\u2E18\u2E19\u2E1A\u2E1B\u2E1C\u2E1D\u2E1E\u2E1F\u2E20\u2E21\u2E22\u2E23\u2E24\u2E25\u2E26\u2E27\u2E28\u2E29\u2E2A\u2E2B\u2E2C\u2E2D\u2E2E\u2E30\u2E31\u2E32\u2E33\u2E34\u2E35\u2E36\u2E37\u2E38\u2E39\u2E3A\u2E3B\u2E3C\u2E3D\u2E3E\u2E3F\u2E40\u2E41\u2E42\u2E43\u2E44\u2E45\u2E46\u2E47\u2E48\u2E49\u2E4A\u2E4B\u2E4C\u2E4D\u2E4E\u2E4F\u2E52\u3001\u3002\u3003\u3008\u3009\u300A\u300B\u300C\u300D\u300E\u300F\u3010\u3011\u3014\u3015\u3016\u3017\u3018\u3019\u301A\u301B\u301C\u301D\u301E\u301F\u3030\u303D\u30A0\u30FB\uA4FE\uA4FF\uA60D\uA60E\uA60F\uA673\uA67E\uA6F2\uA6F3\uA6F4\uA6F5\uA6F6\uA6F7\uA874\uA875\uA876\uA877\uA8CE\uA8CF\uA8F8\uA8F9\uA8FA\uA8FC\uA92E\uA92F\uA95F\uA9C1\uA9C2\uA9C3\uA9C4\uA9C5\uA9C6\uA9C7\uA9C8\uA9C9\uA9CA\uA9CB\uA9CC\uA9CD\uA9DE\uA9DF\uAA5C\uAA5D\uAA5E\uAA5F\uAADE\uAADF\uAAF0\uAAF1\uABEB\uD800\uD801\uD802\uD803\uD804\uD805\uD806\uD807\uD809\uD81A\uD81B\uD82F\uD836\uD83A\u{1F03B}\uDC41\uDC42\uDC43\uDC44\uDC45\uDC47\uDC48\uDC49\uDC4A\uDC4B\uDC4C\uDC4D\uDC4E\uDC4F\uDC57\uDC5A\uDC5B\uDC5D\uDC70\uDC71\uDC72\uDC73\uDC74\uDC9F\uDCBB\uDCBC\uDCBE\uDCBF\uDCC0\uDCC1\uDCC6\uDD00\uDD01\uDD02\uDD1F\uDD2F\uDD3F\uDD40\uDD41\uDD42\uDD43\uDD44\uDD45\uDD46\uDD5E\uDD5F\uDD6F\uDD74\uDD75\uDDC1\uDDC2\uDDC3\uDDC4\uDDC5\uDDC6\uDDC7\uDDC8\uDDC9\uDDCA\uDDCB\uDDCC\uDDCD\uDDCE\uDDCF\uDDD0\uDDD1\uDDD2\uDDD3\uDDD4\uDDD5\uDDD6\uDDD7\uDDDB\uDDDD\uDDDE\uDDDF\uDDE2\uDE38\uDE39\uDE3A\uDE3B\uDE3C\uDE3D\uDE3F\uDE40\uDE41\uDE42\uDE43\uDE44\uDE45\uDE46\uDE50\uDE51\uDE52\uDE53\uDE54\uDE55\uDE56\uDE57\uDE58\uDE60\uDE61\uDE62\uDE63\uDE64\uDE65\uDE66\uDE67\uDE68\uDE69\uDE6A\uDE6B\uDE6C\uDE6E\uDE6F\uDE7F\uDE87\uDE88\uDE89\uDE8A\uDE8B\uDE97\uDE98\uDE99\uDE9A\uDE9B\uDE9C\uDE9E\uDE9F\uDEA0\uDEA1\uDEA2\uDEA9\uDEAD\uDEF0\uDEF1\uDEF2\uDEF3\uDEF4\uDEF5\uDEF6\uDEF7\uDEF8\uDF37\uDF38\uDF39\uDF3A\uDF3B\uDF3C\uDF3D\uDF3E\uDF3F\uDF44\uDF55\uDF56\uDF57\uDF58\uDF59\uDF99\uDF9A\uDF9B\uDF9C\uDF9F\uDFD0\uDFE2\uDFFF\uFD3F\uFE10\uFE11\uFE12\uFE13\uFE14\uFE15\uFE16\uFE17\uFE18\uFE19\uFE30\uFE31\uFE32\uFE33\uFE34\uFE35\uFE36\uFE37\uFE38\uFE39\uFE3A\uFE3B\uFE3C\uFE3D\uFE3E\uFE3F\uFE40\uFE41\uFE42\uFE43\uFE44\uFE45\uFE46\uFE47\uFE48\uFE49\uFE4A\uFE4B\uFE4C\uFE4D\uFE4E\uFE4F\uFE50\uFE51\uFE52\uFE54\uFE55\uFE56\uFE57\uFE58\uFE59\uFE5A\uFE5B\uFE5C\uFE5D\uFE5E\uFE5F\uFE60\uFE61\uFE63\uFE68\uFE6A\uFE6B\uFF01\uFF02\uFF03\uFF05\uFF06\uFF07\uFF08\uFF09\uFF0A\uFF0C\uFF0D\uFF0E\uFF0F\uFF1A\uFF1B\uFF1F\uFF20\uFF3B\uFF3C\uFF3D\uFF3F\uFF5B\uFF5D\uFF5F\uFF60\uFF61\uFF62\uFF63\uFF64\uFF65";
-    }
-  });
-
   // node_modules/@jrc03c/js-text-tools/src/helpers/strip.js
   var require_strip = __commonJS({
     "node_modules/@jrc03c/js-text-tools/src/helpers/strip.js"(exports, module) {
-      var replaceAll = require_replace_all();
       var punctuation = require_punctuation();
+      var replaceAll = require_replace_all();
       var doubleSpace = "  ";
       var singleSpace = " ";
       function strip(text) {
@@ -54504,9 +54562,86 @@ ${codeFrame}` : message);
   // node_modules/@jrc03c/js-text-tools/src/stringify.js
   var require_stringify = __commonJS({
     "node_modules/@jrc03c/js-text-tools/src/stringify.js"(exports, module) {
-      var { decycle } = require_src3();
-      function stringify(x, replacer, space) {
-        return JSON.stringify(decycle(x), replacer, space);
+      var {
+        assert,
+        decycle,
+        isArray,
+        isDate,
+        isString,
+        isUndefined,
+        range
+      } = require_src3();
+      function prefix(s, n) {
+        if (!s || n <= 0)
+          return "";
+        return range(0, n).map(() => s).join("");
+      }
+      function stringify(x, indent) {
+        assert(
+          isString(indent) || isUndefined(indent),
+          "The second parameter to the `stringify` function must be undefined or a string!"
+        );
+        const newline = indent ? "\n" : "";
+        function helper(x2, indent2, depth) {
+          depth = depth || 0;
+          if (typeof x2 === "number" || typeof x2 === "bigint") {
+            if (x2 === Infinity) {
+              return "Infinity";
+            }
+            if (x2 === -Infinity) {
+              return "-Infinity";
+            }
+            if (isNaN(x2)) {
+              return "NaN";
+            }
+            return x2.toString();
+          }
+          if (typeof x2 === "string") {
+            return JSON.stringify(x2);
+          }
+          if (typeof x2 === "boolean") {
+            return x2.toString();
+          }
+          if (typeof x2 === "undefined") {
+            return "undefined";
+          }
+          if (typeof x2 === "symbol") {
+            return x2.toString();
+          }
+          if (typeof x2 === "function") {
+            return x2.toString();
+          }
+          if (typeof x2 === "object") {
+            if (x2 === null) {
+              return "null";
+            }
+            if (isDate(x2)) {
+              return x2.toJSON();
+            }
+            if (isArray(x2)) {
+              if (x2.length === 0) {
+                return prefix(indent2, depth - 1) + "[]";
+              }
+              return prefix(indent2, depth - 1) + "[" + newline + x2.map((v) => {
+                let child = helper(v, indent2, depth + 1);
+                if (isString(child))
+                  child = child.trim();
+                return prefix(indent2, depth + 1) + child;
+              }).join("," + newline) + newline + prefix(indent2, depth) + "]";
+            }
+            if (Object.keys(x2).length === 0) {
+              return prefix(indent2, depth - 1) + "{}";
+            }
+            return prefix(indent2, depth - 1) + "{" + newline + Object.keys(x2).map((key) => {
+              let child = helper(x2[key], indent2, depth + 1);
+              if (isString(child))
+                child = child.trim();
+              return prefix(indent2, depth + 1) + JSON.stringify(key) + ":" + (indent2 ? " " : "") + child;
+            }).join("," + newline) + newline + prefix(indent2, depth) + "}";
+          }
+          return "undefined";
+        }
+        return helper(decycle(x), indent);
       }
       module.exports = stringify;
     }
@@ -54608,8 +54743,13 @@ ${codeFrame}` : message);
   var require_src5 = __commonJS({
     "src/index.js"(exports, module) {
       var {
+        assert,
         DataFrame,
+        decycle,
         isArray,
+        isDate,
+        isObject,
+        isString,
         isUndefined,
         range,
         Series
@@ -54622,8 +54762,8 @@ ${codeFrame}` : message);
           return self2.split(a).join(b);
         };
       }
-      function multiplyString(s, n) {
-        if (n <= 0)
+      function prefix(s, n) {
+        if (!s || n <= 0)
           return "";
         return range(0, n).map(() => s).join("");
       }
@@ -54645,76 +54785,86 @@ ${codeFrame}` : message);
           }
         },
         object: {
-          toAssociation(obj, linePrefix) {
-            function recursiveParse(obj2, depth) {
+          toAssociation(x, indentation) {
+            assert(
+              isObject(x),
+              "The first argument passed into the `toAssociation` function must be a JS object!"
+            );
+            assert(
+              isString(indentation) || isUndefined(indentation),
+              "The second parameter to the `toAssociation` function must be undefined or a string!"
+            );
+            const newline = indentation ? "\n" : "";
+            function helper(x2, indentation2, depth) {
               depth = depth || 0;
-              const type = typeof obj2;
-              if (type === "string")
-                return stringify(obj2);
-              if (type === "number")
-                return obj2;
-              if (type === "boolean")
-                return stringify(obj2.toString());
-              if (type === "function") {
-                return stringify(
-                  `<function ${obj2.name.trim().length === 0 ? "anonymous" : obj2.name}>`
-                );
-              }
-              if (type === "undefined")
-                return stringify("undefined");
-              if (obj2 === null)
-                return stringify("null");
-              if (obj2 instanceof Array) {
-                if (linePrefix) {
-                  if (obj2.length === 0) {
-                    return multiplyString(linePrefix, depth - 1) + "[]";
-                  }
-                  let out = multiplyString(linePrefix, depth - 1) + "[\n";
-                  obj2.forEach((v) => {
-                    let child = recursiveParse(v, depth + 1);
-                    if (typeof child === "string") {
-                      child = child.trim();
-                    }
-                    out += multiplyString(linePrefix, depth + 1) + child + ",\n";
-                  });
-                  out += multiplyString(linePrefix, depth) + "]";
-                  return out;
-                } else {
-                  if (obj2.length === 0)
-                    return "[]";
-                  return "[ " + obj2.map((v) => recursiveParse(v, depth + 1)).join(", ") + " ]";
+              if (typeof x2 === "number" || typeof x2 === "bigint") {
+                if (x2 === Infinity) {
+                  return '"Infinity"';
                 }
-              } else {
-                if (linePrefix) {
-                  let out = multiplyString(linePrefix, depth - 1) + "{\n";
-                  const keys = Object.keys(obj2);
-                  if (keys.length === 0) {
-                    return multiplyString(linePrefix, depth - 1) + "{}";
-                  }
-                  keys.forEach((key) => {
-                    let child = recursiveParse(obj2[key], depth + 1);
-                    if (typeof child === "string") {
-                      child = child.trim();
-                    }
-                    out += multiplyString(linePrefix, depth + 1) + stringify(key) + " -> " + child + ",\n";
-                  });
-                  out += multiplyString(linePrefix, depth) + "}";
-                  return out;
-                } else {
-                  const pairs = [];
-                  const keys = Object.keys(obj2);
-                  if (keys.length === 0) {
-                    return "{}";
-                  }
-                  keys.forEach((key) => {
-                    const val = recursiveParse(obj2[key], depth + 1);
-                    pairs.push(`"` + key + `" -> ` + val);
-                  });
-                  return "{ " + pairs.join(", ") + " }";
+                if (x2 === -Infinity) {
+                  return '"-Infinity"';
                 }
+                if (isNaN(x2)) {
+                  return '"NaN"';
+                }
+                return x2.toString();
               }
+              if (typeof x2 === "string") {
+                return stringify(x2);
+              }
+              if (typeof x2 === "boolean") {
+                return stringify(stringify(x2));
+              }
+              if (typeof x2 === "undefined") {
+                return '"undefined"';
+              }
+              if (typeof x2 === "symbol") {
+                return stringify(stringify(x2));
+              }
+              if (typeof x2 === "function") {
+                return JSON.stringify(x2.toString()).trim();
+              }
+              if (typeof x2 === "object") {
+                if (x2 === null) {
+                  return '"null"';
+                }
+                if (isDate(x2)) {
+                  return helper(
+                    {
+                      year: x2.getFullYear(),
+                      month: x2.getMonth() + 1,
+                      day: x2.getDate(),
+                      hour: x2.getHours(),
+                      minute: x2.getMinutes()
+                    },
+                    indentation2,
+                    depth
+                  );
+                }
+                if (isArray(x2)) {
+                  if (x2.length === 0) {
+                    return prefix(indentation2, depth - 1) + "[]";
+                  }
+                  return prefix(indentation2, depth - 1) + "[" + newline + x2.map((v) => {
+                    let child = helper(v, indentation2, depth + 1);
+                    if (isString(child))
+                      child = child.trim();
+                    return prefix(indentation2, depth + 1) + child;
+                  }).join("," + newline) + newline + prefix(indentation2, depth) + "]";
+                }
+                if (Object.keys(x2).length === 0) {
+                  return prefix(indentation2, depth - 1) + "{}";
+                }
+                return prefix(indentation2, depth - 1) + "{" + newline + Object.keys(x2).map((key) => {
+                  let child = helper(x2[key], indentation2, depth + 1);
+                  if (isString(child))
+                    child = child.trim();
+                  return prefix(indentation2, depth + 1) + JSON.stringify(key) + (indentation2 ? " " : "") + "->" + (indentation2 ? " " : "") + child;
+                }).join("," + newline) + newline + prefix(indentation2, depth) + "}";
+              }
+              return '"undefined"';
             }
-            return recursiveParse(obj);
+            return helper(decycle(x), indentation);
           }
         },
         template: {
@@ -54751,10 +54901,9 @@ ${codeFrame}` : message);
             const lines = text.split("\n");
             const questions = [];
             lines.forEach((line, i) => {
-              const pattern = /^\s* \s*[^\s]/g;
-              if (line.match(pattern)) {
+              if (line.split(/[^\s]/g)[0].includes(" ")) {
                 throw new Error(
-                  `GT programs must be indented with spaces only! The indentation of line ${i + 1} in your program includes spaces!`
+                  `GT programs must be indented with tabs only! The indentation of line ${i + 1} in your program includes spaces!`
                 );
               }
               if (line.trim().startsWith("*question:")) {
