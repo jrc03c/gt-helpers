@@ -1,5 +1,5 @@
 {
-	"name": "gt-helpers",
+	"name": "@jrc03c/gt-helpers",
 	"version": "0.0.4",
 	"description": "some tools to help parse and generate GuidedTrack programs",
 	"main": "src/index.js",
