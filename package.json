@@ -27,6 +27,7 @@
 		"jest": "^29.5.0",
 		"lodash": "^4.17.21",
 		"prettier": "^2.8.8",
+		"vercel": "^32.2.4",
 		"vue": "^3.3.4"
 	},
 	"dependencies": {
